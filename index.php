@@ -6,7 +6,7 @@
     Author: Todo Pago
 */
 
-define('TODOPAGO_PLUGIN_VERSION','1.3.4');
+define('TODOPAGO_PLUGIN_VERSION','1.3.5');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -349,7 +349,6 @@ function woocommerce_todopago_init(){
                      ),
                 array('%d','%s','%s','%s','%s')
             );
-debugger;
             if($response_sar["StatusCode"] == -1){
                 if ($this->tipo_formulario == TP_FORM_EXTERNO) {
                     echo '<p> Gracias por su órden, click en el botón de abajo para pagar con TodoPago </p>';
@@ -679,11 +678,11 @@ add_action('plugins_loaded', 'todopago_update_db_check');
 
 function my_init() {
 	
-		// comment out the next two lines to load the local copy of jQuery
-		wp_deregister_script('jquery'); 
-		wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js', false, '1.3.2'); 
-		wp_enqueue_script('jquery');
+    // comment out the next two lines to load the local copy of jQuery
+        wp_deregister_script('jquery'); 
+        wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js', false, '1.3.2'); 
+        wp_enqueue_script('jquery');
 }
-
-add_action('init', 'my_init');
+// No eliminar esta linea, en el Readme se indica que esta linea debe  ser descomentada en el caso de tener conflictos con Jquery
+//add_action('init', 'my_init');
 

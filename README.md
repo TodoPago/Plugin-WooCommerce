@@ -1,5 +1,5 @@
 <a name="inicio"></a>
-WooCommerce- módulo Todo Pago (v1.3.4)
+WooCommerce- módulo Todo Pago (v1.3.5)
 ============
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
@@ -31,9 +31,15 @@ La versión de este plug in esta testeada en PHP 5.3 en adelante y WordPress 3.7
 2. Copiar carpeta woocommerce-plugin-master al directorio de plugins de wordpress ("raíz de wordpress"/wp-content/plugins). 
 3. Renombrarla woocommerce-plugin-master por woocommerce-plugin.
 
-Observaci&oacute;n:
-Descomentar: <em>extension=php_soap.dll</em> del php.ini, ya que para la conexión al gateway se utiliza la clase <em>SoapClient</em> del API de PHP.
+Observaci&oacute;nes:
+<br />
+1. Descomentar: <em>extension=php_soap.dll</em> del php.ini, ya que para la conexión al gateway se utiliza la clase <em>SoapClient</em> del API de PHP.
 Descomentar: <em>extension=php_openssl.dll</em> del php.ini 
+<br />
+2. En caso de tener conflictos con Jquery por los diferentes temas, descomentar la siguiente linea que se encuentra al final del index.php
+```php
+  // add_action('init', 'my_init');
+```
 <br />
 [<sub>Volver a inicio</sub>](#inicio)
 
@@ -258,7 +264,7 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
   <thead>
   <tbody>
     <tr>
-      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.3.4</a></td>
+      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.3.5</a></td>
       <td>Stable (Current version)</td>
       <td>WordPress 3.7.5 <br />
           WooCommerce 2.3.5
