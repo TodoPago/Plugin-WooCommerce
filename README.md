@@ -1,5 +1,5 @@
 <a name="inicio"></a>
-WooCommerce- módulo Todo Pago (v1.3.5)
+WooCommerce- módulo Todo Pago (v1.3.7)
 ============
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
@@ -84,7 +84,7 @@ Se puede obtener los datos de configuracion del plugin con solo loguearte con tu
 a. Ir a la opcion Obtener credenciales</br>
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/9-credenciales.png) </br>
 b. Loguearse con el mail y password de Todopago.</br>
-c. Los datos se cargaran automaticamente en los campos Merchant ID y Security code en el ambiente correspondiente (Desarrollo o produccion ) y solo hay que hacer click en el boton guardar datos y listo.</br>
+c. Los datos se cargaran automaticamente en los campos Merchant ID y Security code en el ambiente correspondiente y solo hay que hacer click en el boton guardar datos y listo.</br>
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/3-%20configuracion%20developers.PNG)</br>
 [<sub>Volver a inicio</sub>](#inicio)
 
@@ -264,7 +264,7 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
   <thead>
   <tbody>
     <tr>
-      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.3.5</a></td>
+      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.3.7</a></td>
       <td>Stable (Current version)</td>
       <td>WordPress 3.7.5 <br />
           WooCommerce 2.3.5

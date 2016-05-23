@@ -6,21 +6,29 @@
 
 jQuery(function ($) {
     
-        $("#woocommerce_todopago_btnCredentials").val("Obtener Credenciales");  
+        $("#woocommerce_todopago_btnCredentials").val("Obtener Credenciales");
+        var globalError = false;
+        
 	$("#woocommerce_todopago_btnCredentials").click(function() {
             
             var user = $("#woocommerce_todopago_user").val();
             var password = $("#woocommerce_todopago_password").val();
-            var mode = $("#woocommerce_todopago_ambiente").val();
-              
-            $.ajax({type: 'POST',
+            
+            getCredentials(user, password, 'test');
+            getCredentials(user, password, 'prod');  
+                               
+         }); 
+        
+        function getCredentials (user, password, mode){
+            
+          $.ajax({type: 'POST',
                      url: "../wp-content/plugins/woocommerce-plugin/view/credentials.php",
                      data: { 'user' :  user,
                              'password' :  password,
                              'mode' :  mode
                            },
                      success: function(data) {  
-                         setCredentials(data);  
+                         setCredentials(data, mode);  
                      },
                      error: function(xhr, ajaxOptions, thrownError) {  
                          console.log(xhr);
@@ -32,30 +40,34 @@ jQuery(function ($) {
                                           break;               
                          }
                      },
-             });                    
-        }); 
+                });     
+        }
         
-        function setCredentials (data){
+        
+        function setCredentials (data, ambiente){
             
-           var ambiente = $("#woocommerce_todopago_ambiente").val();
            var response = $.parseJSON(data);
            
-           if(response.codigoResultado === undefined){ 
+           if(globalError === false && response.codigoResultado === undefined){ 
+               globalError = true;
                alert(response.mensajeResultado);     
            }else{
-               
-             if(ambiente == 'prod'){         
-                $("#woocommerce_todopago_http_header_prod").val(response.apikey);
-                $("#woocommerce_todopago_security_prod").val(response.security);
-                $("#woocommerce_todopago_merchant_id_prod").val(response.merchandid);
-            } else{ 
-                $("#woocommerce_todopago_http_header_test").val(response.apikey);
-                $("#woocommerce_todopago_security_test").val(response.security);
-                $("#woocommerce_todopago_merchant_id_test").val(response.merchandid);
-            }
+               globalError = false;
+                if(ambiente === 'prod'){         
+                    $("#woocommerce_todopago_http_header_prod").val(response.apikey);
+                    $("#woocommerce_todopago_security_prod").val(response.security);
+                    $("#woocommerce_todopago_merchant_id_prod").val(response.merchandid);
+                } else{ 
+                    $("#woocommerce_todopago_http_header_test").val(response.apikey);
+                    $("#woocommerce_todopago_security_test").val(response.security);
+                    $("#woocommerce_todopago_merchant_id_test").val(response.merchandid);
+                }
                 
            }
         } 
+        
+        
+        
         
         
         

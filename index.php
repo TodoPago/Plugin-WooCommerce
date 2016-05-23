@@ -1,16 +1,17 @@
 <?php
 /*
-	Plugin Name: TodoPago para WooCommerce
+    Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.3.0
+    Version: 1.3.7
     Author: Todo Pago
 */
 
-define('TODOPAGO_PLUGIN_VERSION','1.3.5');
+define('TODOPAGO_PLUGIN_VERSION','1.3.7');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
 define('TODOPAGO_FORMS_PROD','https://forms.todopago.com.ar');
+define('TODOPAGO_FORMS_TEST','https://developers.todopago.com.ar');
 
 use TodoPago\Sdk as Sdk;
 
@@ -42,36 +43,36 @@ function woocommerce_todopago_init(){
             $this -> init_settings(); //Carga en el array settings los valores de los campos persistidos de la base de datos
 
             //Datos generales
-            $this -> version          = $this -> settings['version'];
-            $this -> title            = $this -> settings['title'];
-            $this -> description      = $this -> settings['description'];
-            $this -> ambiente         = $this -> settings['ambiente'];
-            $this -> tipo_segmento    = $this -> settings['tipo_segmento'];
-            //$this -> canal_ingreso    = $this -> settings['canal_ingreso'];
-            $this -> deadline         = $this -> settings['deadline'];
-            $this->tipo_formulario    = $this -> settings['tipo_formulario'];
+            $this -> version          = $this -> todopago_getValueOfArray($this -> settings,'version');
+            $this -> title            = $this -> todopago_getValueOfArray($this -> settings,'title');
+            $this -> description      = $this -> todopago_getValueOfArray($this -> settings,'description');
+            $this -> ambiente         = $this -> todopago_getValueOfArray($this -> settings,'ambiente');
+            $this -> tipo_segmento    = $this -> todopago_getValueOfArray($this -> settings,'tipo_segmento');
+            //$this -> canal_ingreso  = $this -> settings['canal_ingreso'];
+            $this -> deadline         = $this -> todopago_getValueOfArray($this -> settings,'deadline');
+            $this -> tipo_formulario  = $this -> todopago_getValueOfArray($this -> settings,'tipo_formulario');
 
-            //Datos credentials
-            $this -> credentials      = $this -> settings['credentials'];
-            $this -> user             = $this -> settings['user'];
-            $this -> password         = $this -> settings['password'];
-            $this -> btnCredentials   = $this -> settings['btnCredentials'];
+            //Datos credentials;
+            $this -> credentials      = $this -> todopago_getValueOfArray($this -> settings,'credentials');
+            $this -> user             = $this -> todopago_getValueOfArray($this -> settings,'user');
+            $this -> password         = $this -> todopago_getValueOfArray($this -> settings,'password');
+            $this -> btnCredentials   = $this -> todopago_getValueOfArray($this -> settings,'btnCredentials');
 
             //Datos ambiente de test
-            $this -> http_header_test = $this -> settings['http_header_test'];
-            $this -> security_test    = $this -> settings['security_test'];
-            $this -> merchant_id_test = $this -> settings['merchant_id_test'];
+            $this -> http_header_test = $this -> todopago_getValueOfArray($this -> settings,'http_header_test');
+            $this -> security_test    = $this -> todopago_getValueOfArray($this -> settings,'security_test');
+            $this -> merchant_id_test = $this -> todopago_getValueOfArray($this -> settings,'merchant_id_test');
 
             //Datos ambiente de producción
-            $this -> http_header_prod = $this -> settings['http_header_prod'];
-            $this -> security_prod    = $this -> settings['security_prod'];
-            $this -> merchant_id_prod = $this -> settings['merchant_id_prod'];
+            $this -> http_header_prod = $this -> todopago_getValueOfArray($this -> settings,'http_header_prod');
+            $this -> security_prod    = $this -> todopago_getValueOfArray($this -> settings,'security_prod');
+            $this -> merchant_id_prod = $this -> todopago_getValueOfArray($this -> settings,'merchant_id_prod');
 
             //Datos estado de pedidos
-            $this -> estado_inicio    = $this -> settings['estado_inicio'];
-            $this -> estado_aprobacion= $this -> settings['estado_aprobacion'];
-            $this -> estado_rechazo   = $this -> settings['estado_rechazo'];
-            $this -> estado_offline   = $this -> settings['estado_offline'];
+            $this -> estado_inicio    = $this -> todopago_getValueOfArray($this -> settings,'estado_inicio');
+            $this -> estado_aprobacion= $this -> todopago_getValueOfArray($this -> settings,'estado_aprobacion');
+            $this -> estado_rechazo   = $this -> todopago_getValueOfArray($this -> settings,'estado_rechazo');
+            $this -> estado_offline   = $this -> todopago_getValueOfArray($this -> settings,'estado_offline');
 
             $this -> msg['message'] = "";
             $this -> msg['class'] = "";
@@ -93,6 +94,16 @@ function woocommerce_todopago_init(){
 
         }//End __construct
 
+        function todopago_getValueOfArray($array , $key) {     
+              
+            if(array_key_exists($key, $array)){  
+		return $array[$key];
+            }  else {
+                return FALSE;
+            }
+                       
+        }
+        
         function init_form_fields(){
             
             global $woocommerce;
@@ -365,7 +376,7 @@ function woocommerce_todopago_init(){
                     $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
                     $prk = $response_sar['PublicRequestKey'];
 	            $returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
-                    $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_ENDPOINT_TEST)."../../..";
+                    $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_FORMS_TEST);
 
                     require 'view/formulario-hibrido/formulario.php';
                 }
