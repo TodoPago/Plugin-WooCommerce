@@ -1,5 +1,5 @@
 <a name="inicio"></a>
-WooCommerce- módulo Todo Pago (v1.3.7)
+WooCommerce- módulo Todo Pago (v1.4.0)
 ============
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
@@ -10,6 +10,7 @@ Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
  - [Configuración plug in](#confplugin)
  - [Formulario Hibrido](#formHibrido)
  - [Obtener datos de configuracion](#getcredentials)
+ - [Configuración de Maximo de Cuotas](#maxcuotas)
 - [Prevencion de Fraude](#cybersource)
  - [Consideraciones generales](#cons_generales)
  - [Consideraciones para vertical retail](#cons_retail)
@@ -86,6 +87,13 @@ a. Ir a la opcion Obtener credenciales</br>
 b. Loguearse con el mail y password de Todopago.</br>
 c. Los datos se cargaran automaticamente en los campos Merchant ID y Security code en el ambiente correspondiente y solo hay que hacer click en el boton guardar datos y listo.</br>
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/3-%20configuracion%20developers.PNG)</br>
+[<sub>Volver a inicio</sub>](#inicio)
+
+<a name="maxcuotas"></a>
+####Configuración de Maximo de Cuotas
+Se puede configurar la cantidad máxima de cuotas que ofrecerá el formulario de TodoPago con el campo cantidad máxima de cuotas. Para que se tenga en cuenta este valor se debe habilitar el campo Habilitar máximo de cuotas y tomará el valor fijado para máximo de cuotas. En caso que esté habilitado el campo y no haya un valor puesto para las cuotas se tomará el valor 12 por defecto.
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/13-%20cuotas.png)</br>
+<br />
 [<sub>Volver a inicio</sub>](#inicio)
 
 <br />
@@ -264,7 +272,7 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
   <thead>
   <tbody>
     <tr>
-      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.3.7</a></td>
+      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.4.0</a></td>
       <td>Stable (Current version)</td>
       <td>WordPress 3.7.5 <br />
           WooCommerce 2.3.5

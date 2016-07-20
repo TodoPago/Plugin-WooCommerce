@@ -11,7 +11,7 @@
 		<meta charset="UTF-8">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<script src="<?php echo "$env_url/resources/TPHybridForm-v0.1.js"; ?>"></script>
-		<link href="<?php echo " $form_dir/todopago-formulario.css " ?>" rel="stylesheet" type="text/css">
+		<link href="<?php echo "$form_dir/todopago-formulario.css " ?>" rel="stylesheet" type="text/css">
 		<script>
 
 			$(window).load(function() {
@@ -168,13 +168,13 @@
 		function customPaymentSuccessResponse(response) {
 			console.log("My custom payment success callback");
 			console.log(response.ResultCode + " : " + response.ResultMessage);
-			document.location = "<?php echo "$returnURL&Answer="; ?>" + response.AuthorizationKey;
+			document.location = "<?php echo "$return_URL_OK&Answer="; ?>" + response.AuthorizationKey;
 		}
 
 		function customPaymentErrorResponse(response) {
 			console.log("Mi custom payment error callback");
 			console.log(response.ResultCode + " : " + response.ResultMessage);
-			document.location = "<?php echo "$returnURL&Answer="; ?>" + response.AuthorizationKey;
+			document.location = "<?php echo "$return_URL_ERROR&Answer="; ?>" + response.AuthorizationKey;
 		}
 
 		function initLoading() {

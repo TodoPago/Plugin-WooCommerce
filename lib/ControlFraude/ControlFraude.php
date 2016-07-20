@@ -19,9 +19,8 @@ abstract class ControlFraude {
 
 	private function completeCF(){
 		$payDataOperacion = array();
-
-        $payDataOperacion['AMOUNT'] = $this->order->order_total;
-        $payDataOperacion['EMAILCLIENTE'] = $this->order->billing_email;
+                $payDataOperacion['AMOUNT'] = $this->order->order_total;
+                $payDataOperacion['EMAILCLIENTE'] = $this->order->billing_email;
 		$payDataOperacion['CSBTCITY'] = $this->getField($this->order->billing_city);
 		$payDataOperacion['CSBTCOUNTRY'] = $this->order->billing_country;
 		$payDataOperacion['CSBTCUSTOMERID'] = $this->order->customer_user;
@@ -42,11 +41,11 @@ abstract class ControlFraude {
 	        //CSMDD7 - Fecha Registro Comprador (num Dias) - ver que pasa si es guest
 	        $payDataOperacion['CSMDD7'] = $this->_getDateTimeDiff($this->customer->data->user_registered);
 			//CSMDD8 - Usuario Guest? (S/N). En caso de ser Y, el campo CSMDD9 no deber&acute; enviarse
-            $payDataOperacion['CSMDD8'] = "S";
+                $payDataOperacion['CSMDD8'] = "S";
 			//CSMDD9 - Customer password Hash: criptograma asociado al password del comprador final
-            $payDataOperacion['CSMDD9'] = $this->customer->data->user_pass;
+                $payDataOperacion['CSMDD9'] = $this->customer->data->user_pass;
         } else {
-            $payDataOperacion['CSMDD8'] = "N";
+                $payDataOperacion['CSMDD8'] = "N";
         }
 
 		return $payDataOperacion;
@@ -114,6 +113,8 @@ abstract class ControlFraude {
 		$no_permitidas= array ("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","À","Ã","Ì","Ò","Ù","Ã™","Ã ","Ã¨","Ã¬","Ã²","Ã¹","ç","Ç","Ã¢","ê","Ã®","Ã´","Ã»","Ã‚","ÃŠ","ÃŽ","Ã”","Ã›","ü","Ã¶","Ã–","Ã¯","Ã¤","«","Ò","Ã","Ã„","Ã‹");
 		$permitidas= array ("a","e","i","o","u","A","E","I","O","U","n","N","A","E","I","O","U","a","e","i","o","u","c","C","a","e","i","o","u","A","E","I","O","U","u","o","O","i","a","e","U","I","A","E");
 		$string = str_replace($no_permitidas, $permitidas ,$string);
+                
+                $string = str_replace('#', '', $string);
 
 		return $string;
 	}
