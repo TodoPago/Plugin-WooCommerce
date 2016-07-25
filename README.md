@@ -1,5 +1,5 @@
 <a name="inicio"></a>
-WooCommerce- módulo Todo Pago (v1.4.0)
+WooCommerce- módulo Todo Pago (v1.4.2)
 ============
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
@@ -67,6 +67,10 @@ Para llegar al menu de configuración del plugin ir a: <em>WooCommerce -> Ajuste
 - Estado de transacción aprobada: Se setea luego de volver del formulario de pago de Todo Pago y se obtiene una confirmación del pago.
 - Estado de transacción rechazada: Se setea luego de volver del formulario de pago de Todo Pago y se obtiene un rechazo del pago.
 </br>
+
+***Redirección final de transacción (a partir de v 1.4.2)***
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/woocommerce_1.4.2.png)</br>
+
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="formHibrido"></a>

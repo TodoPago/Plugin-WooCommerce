@@ -19,12 +19,13 @@ abstract class ControlFraude {
 
 	private function completeCF(){
 		$payDataOperacion = array();
+
                 $payDataOperacion['AMOUNT'] = $this->order->order_total;
                 $payDataOperacion['EMAILCLIENTE'] = $this->order->billing_email;
 		$payDataOperacion['CSBTCITY'] = $this->getField($this->order->billing_city);
 		$payDataOperacion['CSBTCOUNTRY'] = $this->order->billing_country;
 		$payDataOperacion['CSBTCUSTOMERID'] = $this->order->customer_user;
-		$payDataOperacion['CSBTIPADDRESS'] = ($this->order->customer_ip_address == '::1') ? '127.0.0.1' : $this->order->customer_ip_address;
+		$payDataOperacion['CSBTIPADDRESS'] = ($this->order->customer_ip_address == '::1' || $this->order->customer_ip_address == '') ? '127.0.0.1' : $this->order->customer_ip_address;
 		$payDataOperacion['CSBTEMAIL'] = $this->order->billing_email;
 		$payDataOperacion['CSBTFIRSTNAME'] = $this->order->billing_first_name;
 		$payDataOperacion['CSBTLASTNAME'] = $this->order->billing_last_name;
@@ -130,30 +131,58 @@ abstract class ControlFraude {
 		$totalamount_array = array();
 		$quantity_array = array();
 		$price_array = array();
+                
+		global $woocommerce;          
+                if($woocommerce->cart->cart_contents != NULL ||count($woocommerce->cart->cart_contents )>0){
+                        foreach($woocommerce->cart->cart_contents as $cart_key => $cart_item_array){
+                            $product = new WC_Product($cart_item_array['product_id']);
+                            $sku = $product->get_sku();
 
-		global $woocommerce;
-		foreach($woocommerce->cart->cart_contents as $cart_key => $cart_item_array){
-			$product = new WC_Product($cart_item_array['product_id']);
-			$sku = $product->get_sku();
-
-			$terms = get_the_terms($cart_item_array['product_id'], 'product_cat');
-			$product_cat = "default";
-			if($terms && ! is_wp_error($terms)){
+                            $terms = get_the_terms($cart_item_array['product_id'], 'product_cat');
+                            $product_cat = "default";
+                            if($terms && ! is_wp_error($terms)){
 				$product_cat = $terms[0]->name;
-			}
+                            }
 
-			$productcode_array[] = $product_cat;
+                            $productcode_array[] = $product_cat;
 
-                        $descripcion = $this->_setDescription($cart_item_array);
-                        $description_array[] = $descripcion;
+                            $descripcion = $this->_setDescription($cart_item_array);
+                            $description_array[] = $descripcion;
 
-                        $name_array[] = str_replace('#', '', $cart_item_array['data']->post->post_title);
-                        $sku_array[] = str_replace('#', '', empty($sku) ? $cart_item_array['product_id'] : $sku);
-                        $totalamount_array[] = number_format($cart_item_array['line_total'],2,".","");
-                        $quantity_array[] = $cart_item_array['quantity'];
-                        $price_array[] = number_format($cart_item_array['data']->price,2,".","");
-		}
-
+                            $name_array[] = str_replace('#', '', $cart_item_array['data']->post->post_title);
+                            $sku_array[] = str_replace('#', '', empty($sku) ? $cart_item_array['product_id'] : $sku);
+                            $totalamount_array[] = number_format($cart_item_array['line_total'],2,".","");
+                            $quantity_array[] = $cart_item_array['quantity'];
+                            $price_array[] = number_format($cart_item_array['data']->price,2,".","");
+                        }    
+                }else{
+                    
+                    $items =  $this->order->get_items();                 
+                    foreach($items as $key => $value){
+                        if(is_array($value)){
+                            $product = new WC_Product($value['product_id']);
+                            $sku = $product->get_sku();
+                            
+                            $terms = get_the_terms($value['product_id'], 'product_cat');
+                            $product_cat = "default";
+                            if($terms && ! is_wp_error($terms)){
+				$product_cat = $terms[0]->name;
+                            }       
+                            
+                            $productcode_array[] = $product_cat;
+                            
+                            $descripcion = str_replace('#', '', $value['name']);
+                            $description_array[] = $descripcion;
+                            $name_array[] = $descripcion; 
+                            $sku_array[] = str_replace('#', '', empty($sku) ? $value['product_id'] : $sku);
+                            $totalamount_array[] = number_format($value['line_total'],2,".","");
+                            $quantity_array[] = $value['qty'];
+                            $price_array[] = number_format($value['line_subtotal'],2,".","");
+                        }
+                    }
+                    
+                }
+           
 		$payDataOperacion['CSITPRODUCTCODE'] = join('#', $productcode_array);
 		$payDataOperacion['CSITPRODUCTDESCRIPTION'] = join("#", $description_array);
 		$payDataOperacion['CSITPRODUCTNAME'] = join("#", $name_array);
@@ -202,10 +231,6 @@ abstract class ControlFraude {
 
         return $return;
 	}
-
-
-
-
 
 
 }

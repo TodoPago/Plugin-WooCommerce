@@ -6,7 +6,7 @@
     Author: Todo Pago
 */
 
-define('TODOPAGO_PLUGIN_VERSION','1.4.1');
+define('TODOPAGO_PLUGIN_VERSION','1.4.2');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -58,6 +58,8 @@ function woocommerce_todopago_init(){
             $this -> description      = $this -> todopago_getValueOfArray($this -> settings,'description');
             $this -> ambiente         = $this -> todopago_getValueOfArray($this -> settings,'ambiente');
             $this -> tipo_segmento    = $this -> todopago_getValueOfArray($this -> settings,'tipo_segmento');
+            $this -> url_after_redirection  = $this -> todopago_getValueOfArray($this -> settings, 'url_after_redirection');
+            
             //$this -> canal_ingreso  = $this -> settings['canal_ingreso'];
             $this -> deadline         = $this -> todopago_getValueOfArray($this -> settings,'deadline');
             $this -> tipo_formulario  = $this -> todopago_getValueOfArray($this -> settings,'tipo_formulario');
@@ -147,6 +149,13 @@ function woocommerce_todopago_init(){
                     'options' => array(
                         'test' => 'developers',
                         'prod' => 'produccion')),
+                'url_after_redirection' => array(
+                    'title' => 'Redirección final de transacción (caso de éxito)',
+                    'type' => 'select',
+                    'description' => 'selecciones la pagina de redirección en caso de exito de la transacción',
+                    'options' => array(
+                        'default' => 'default',
+                        'order_received' => 'order received')),
                 'tipo_segmento' => array(
                     'title' => 'Tipo de Segmento',
                     'type' => 'select',
@@ -185,8 +194,22 @@ function woocommerce_todopago_init(){
                     'default' => 'no'),                
                 'max_cuotas' => array(
                     'title' => 'Numero maximo de cuotas',
-                    'type'=> 'text',
-                    'description' => 'Puede escojer entre 1 a 12 cuotas'                    
+                    'type'=> 'select',
+                    'description' => 'Puede escojer entre 1 a 12 cuotas',
+                    'options' => array(
+                        '12' => 12,
+                        '11' => 11,
+                        '10' => 10,
+                        '9' => 9,
+                        '8' => 8,
+                        '7' => 7,
+                        '6' => 6,
+                        '5' => 5,
+                        '4' => 4,
+                        '3' => 3,
+                        '2' => 2,
+                        '1' => 1
+                        )                    
                 ),         
                 
                 'credentials' => array(
@@ -292,9 +315,14 @@ function woocommerce_todopago_init(){
             }else{
                 global $woocommerce;
                 $order_id = $woocommerce->session->__get('order_awaiting_payment');
+                
+                if($order_id === null){
+                 $order_key  = $_GET['key'];
+                 $order_id =  wc_get_order_id_by_order_key($order_key);
+                }
+
                 $order = new WC_Order($order_id);
-                //var_dump($order);
-                //var_dump($order->get_user());
+              
                 if($order->payment_method == 'todopago'){
                     global $woocommerce;
                     $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user, $order_id, true);
@@ -336,14 +364,19 @@ function woocommerce_todopago_init(){
             //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
  
             $home = home_url();
-            $arrayHome = split ("/", $home); 
+            $arrayHome = explode ("/", $home); 
             $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
             
-            $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
-            //$return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true'; 
-            
+            if($this->url_after_redirection == "order_received"){
+                        $return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true';
+                    }else{
+                     $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
+                       
+                    }
+
             $esProductivo = $this->ambiente == "prod";
             $optionsSAR_comercio = $this->getOptionsSARComercio($esProductivo, $return_URL_OK,$return_URL_ERROR);
+
 
             $optionsSAR_operacion = $this->getOptionsSAROperacion($esProductivo, $order);
             $optionsSAR_operacion = array_merge_recursive($optionsSAR_operacion, $datosCs);
@@ -357,6 +390,7 @@ function woocommerce_todopago_init(){
         }
 
         function call_sar($paramsSAR, $logger){
+            
             $logger->debug(call_sar);
             $esProductivo = $this->ambiente == "prod";
             $http_header = $this->getHttpHeader();
@@ -408,15 +442,20 @@ function woocommerce_todopago_init(){
                     $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
                     $prk = $response_sar['PublicRequestKey'];
 
+
 	            //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
                     
                     $home = home_url();
-                    $arrayHome = split ("/", $home); 
+                    $arrayHome = explode ("/", $home); 
                     $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
-            
-                    $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
-                    //$return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true';
                     
+                    if($this->url_after_redirection == "order_received"){
+                        $return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true';
+                    }else{
+                        $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
+                        
+                    }
+
                     $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_FORMS_TEST);
 
                     require 'view/formulario-hibrido/formulario.php';
@@ -580,8 +619,10 @@ function woocommerce_todopago_init(){
         }
 
         private function generate_form($order, $URL_Request){
+            $order_key  = $_GET['key'];
+                 $order_id =  wc_get_order_id_by_order_key($order_key);
             return '<form action="' . get_site_url() . '" method="GET" id="todopago_payment_form">' .
-                '<input name="TodoPago_redirect" value="true" hidden="true"/> <input hidden="true" name="order" value="'. $_GET['order'] .'" /> '. 
+                '<input name="TodoPago_redirect" value="true" hidden="true"/> <input hidden="true" name="order" value="'. $order_id .'" /> '. 
                 '<input type="submit" class="button-alt" id="submit_todopago_payment_form" value="' . 'Pagar con TodoPago' . '" /> 
               <a class="button cancel" href="' . $order->get_cancel_order_url() . '">' . ' Cancelar orden ' . '</a>
               </form>';
@@ -660,11 +701,14 @@ function woocommerce_todopago_init(){
             global $woocommerce;
             $order = new WC_Order( $order_id );
 
-            return array(
-                'result' => 'success', 
-                'redirect' => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-                //'redirect' => $order -> get_checkout_payment_url(true)
+            $result = array (     
+                 'result' => 'success', 
+                 'redirect' => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+
+
             );
+   
+            return $result;
         }
 
     }//End WC_TodoPago_Gateway
