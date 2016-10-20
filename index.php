@@ -2,21 +2,21 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.4.0
+    Version: 1.6.0
     Author: Todo Pago
 */
 
-define('TODOPAGO_PLUGIN_VERSION','1.4.2');
+define('TODOPAGO_PLUGIN_VERSION','1.6.0');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
 define('TODOPAGO_FORMS_PROD','https://forms.todopago.com.ar');
 define('TODOPAGO_FORMS_TEST','https://developers.todopago.com.ar');
 
-use TodoPago\Sdk as Sdk;
+//use TodoPago\Sdk as Sdk;
 
+require_once(dirname(__FILE__).'/lib/vendor/autoload.php');
 require_once(dirname(__FILE__).'/lib/logger.php');
-require_once(dirname(__FILE__).'/lib/Sdk.php');
 require_once(dirname(__FILE__).'/lib/ControlFraude/ControlFraudeFactory.php');
 
 //Llama a la función woocommerce_todopago_init cuando se cargan los plugins. 0 es la prioridad.
@@ -24,14 +24,18 @@ add_action('plugins_loaded', 'woocommerce_todopago_init', 0);
 
 function woocommerce_todopago_init(){
     
-
-
     if(!class_exists('WC_Payment_Gateway')) return;
 
-      if (isset($_GET["TodoPago_redirect"]) && $_GET["TodoPago_redirect"]=="true" && isset($_GET["order"])){
+      if (isset($_GET["TodoPago_redirect"]) && $_GET["TodoPago_redirect"]=="true" && isset($_GET["order"])) {
         $row = get_post_meta($_GET["order"], 'response_SAR', true);
         $response_SAR = unserialize($row);
-        wp_redirect( $response_SAR["URL_Request"]);
+        if ($_GET["form"]=="ext") {
+            header('Location: '.$response_SAR["URL_Request"]);
+            exit;
+        } else {
+            $res = array("prk" => $response_SAR["PublicRequestKey"]);
+        }
+        echo json_encode($res);
         exit;
     }
     
@@ -364,11 +368,12 @@ function woocommerce_todopago_init(){
             //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
  
             $home = home_url();
+
             $arrayHome = explode ("/", $home); 
             $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
             
             if($this->url_after_redirection == "order_received"){
-                        $return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true';
+                        $return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true&order='. $order->id;
                     }else{
                      $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
                        
@@ -391,11 +396,11 @@ function woocommerce_todopago_init(){
 
         function call_sar($paramsSAR, $logger){
             
-            $logger->debug(call_sar);
+            $logger->debug("call_sar");
             $esProductivo = $this->ambiente == "prod";
             $http_header = $this->getHttpHeader();
             $logger->debug("http header: ".json_encode($http_header));
-            $connector = new Sdk($http_header, $this->ambiente);
+            $connector = new \TodoPago\Sdk($http_header, $this->ambiente);
             $logger->debug("Connector: ".json_encode($connector));
             $response_sar = $connector->sendAuthorizeRequest($paramsSAR['comercio'], $paramsSAR['operacion']);
             $logger->info('response SAR '.json_encode($response_sar));
@@ -440,12 +445,12 @@ function woocommerce_todopago_init(){
                     $email = $paramsSAR['operacion']['CSSTEMAIL'];
                     $merchant = $paramsSAR['operacion']['MERCHANT'];
                     $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
-                    $prk = $response_sar['PublicRequestKey'];
 
 
 	            //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
                     
                     $home = home_url();
+
                     $arrayHome = explode ("/", $home); 
                     $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
                     
@@ -499,7 +504,7 @@ function woocommerce_todopago_init(){
             $esProductivo = $this->ambiente == "prod"; 
             $http_header = $this->getHttpHeader();
             $logger->info("HTTP_HEADER: ".json_encode($http_header));
-            $connector = new Sdk($http_header, $this -> ambiente);
+            $connector = new \TodoPago\Sdk($http_header, $this -> ambiente);
             
             $logger->info("PARAMETROS GAA: ".json_encode($params_GAA));
             $response_GAA = $connector->getAuthorizeAnswer($params_GAA);
@@ -536,13 +541,11 @@ function woocommerce_todopago_init(){
                 $this -> setOrderStatus($order,'estado_aprobacion');
                 $logger->info('estado de orden '.$order->post_status);
 
-                if($order -> post_status == "wc-completed"){
-                    //Reducir stock
-                    $order->reduce_order_stock();
-                    //Vaciar carrito
-                    global $woocommerce;
-                    $woocommerce->cart->empty_cart();
-                }
+                //Reducir stock
+                $order->reduce_order_stock();
+                //Vaciar carrito
+                global $woocommerce;
+                $woocommerce->cart->empty_cart();
 
                 echo "<h2>Operación " . $order->id . " exitosa</h2>";
                 echo "<script>
@@ -621,11 +624,8 @@ function woocommerce_todopago_init(){
         private function generate_form($order, $URL_Request){
             $order_key  = $_GET['key'];
                  $order_id =  wc_get_order_id_by_order_key($order_key);
-            return '<form action="' . get_site_url() . '" method="GET" id="todopago_payment_form">' .
-                '<input name="TodoPago_redirect" value="true" hidden="true"/> <input hidden="true" name="order" value="'. $order_id .'" /> '. 
-                '<input type="submit" class="button-alt" id="submit_todopago_payment_form" value="' . 'Pagar con TodoPago' . '" /> 
-              <a class="button cancel" href="' . $order->get_cancel_order_url() . '">' . ' Cancelar orden ' . '</a>
-              </form>';
+            return '<a class="button" href="'.get_site_url().'/?TodoPago_redirect=true&form=ext&order='.$order_id.'" id="submit_todopago_payment_form"> Pagar con TodoPago </a>  
+              <a class="button cancel" href="' . $order->get_cancel_order_url() . '">' . ' Cancelar orden ' . '</a>';
         }
 
         public function process_refund( $order_id, $amount = null, $reason = '' ) {
@@ -645,7 +645,7 @@ function woocommerce_todopago_init(){
 
             //Intento instanciar la Sdk, si la configuración está mal, le avisará al usuario.
             try {
-                $connector = new Sdk($this->getHttpHeader(), $this->ambiente);
+                $connector = new \TodoPago\Sdk($this->getHttpHeader(), $this->ambiente);
             }
             catch (Exception $e) {
                 $logger->warn("Error al crear el connector, ", $e);

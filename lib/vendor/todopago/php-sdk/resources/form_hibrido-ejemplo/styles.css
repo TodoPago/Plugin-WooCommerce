@@ -1,0 +1,58 @@
+#tp-form-tph{
+	/*border:1px solid #000;*/
+}
+#tp-form-tph input, #tp-form-tph select {
+	display: block;
+	margin:8px 0px 0px 13px;
+	height: 25px;
+}
+.modal-class {
+
+}
+.modal-content {
+
+}
+#tp-bt-wrapper{
+	margin:0px 0px 0px 9px;
+}
+.tp-button{
+	margin:2px 4px 2px 3px;
+	padding: 2px 5px 2px 5px;
+}
+#tp-logo{
+	background-image: url("images/logo.png");
+	background-repeat: no-repeat;
+	height:40px;
+	width:110px;
+	margin: 0 0 0 14px;
+}
+#tp-content-form{
+	padding: 11px 0;
+	/*width:300px;*/
+	margin: 13px 0 0;
+}
+
+#tp-content-form .dateFields input{	
+	width:41px;
+}
+
+.dateFields .spacer{	
+	margin: 10px -4px 0px 7px;
+}
+
+#codigoSeguridadTxt{
+	width:36px;
+}
+
+.left{
+	float:left;
+}
+.right{
+	float:right;
+}
+.clear{
+	clear:both;
+}
+.tp-label{
+	margin:12px 0 0 10px;
+}

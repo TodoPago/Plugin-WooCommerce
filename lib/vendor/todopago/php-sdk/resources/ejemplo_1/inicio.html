@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("table#retail_inputs").hide(); //.css("display", "none");
+        $("table#travel_inputs").hide();
+        $("table#ticketing_inputs").hide();
+        $("table#servicios_inputs").hide();
+        $("table#bienesdigitales_inputs").hide();
+        $('#verticales').change(function(event) {
+            $("table#retail_inputs").hide(); //.css("display", "none");
+            $("table#travel_inputs").hide();
+            $("table#ticketing_inputs").hide();
+            $("table#servicios_inputs").hide();
+            $("table#bienesdigitales_inputs").hide();
+            if (this.value == "retail") {
+                $("table#retail_inputs").show();
+            }
+            if (this.value == "travel") {
+                $("table#travel_inputs").show();
+            }
+            if (this.value == "ticketing") {
+                $("table#ticketing_inputs").show();
+            }
+            if (this.value == "servicios") {
+                $("table#servicios_inputs").show();
+            }
+            if (this.value == "bienesdigitales") {
+                $("table#bienesdigitales_inputs").show();
+            }
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <h2>Checkout</h2>
+    <table border="1" width="200">
+        <tr>
+            <td>
+                <h4>Su compra:</h4>
+                <p>art 1: 2 x $30</p>
+                <p>art 2: 1 x $4</p>
+                <p>Total: $64</p>
+            </td>
+        </tr>
+    </table>
+    <form method="POST" action="checkout.php">
+        <table>
+            <tr>
+                <td>vertical:</td>
+                <td>
+                    <select id="verticales">
+                        <option>seleccione un vertical</option>
+                        <option value="retail">RETAIL</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Email Address:</td>
+                <td>
+                    <input type="email" name="EMAILCLIENTE" required/>
+                </td>
+            </tr>
+            
+                <td colspan="2">
+                    <h4>Parámetros Adicionales en el post inicial comunes a todos los rubros (datos de facturación):</h4>
+                </td>
+            </tr>
+            <tr>
+                <td>Ciudad:</td>
+                <td>
+                    <input type="text" name="CSBTCITY" />
+                </td>
+            </tr>
+            <tr>
+                <td>País:</td>
+                <td>
+                    <select name="CSBTCOUNTRY">
+                        <option value="AR">Argentina</option>
+                        <option value="US">EEUU</option>
+                        <option value="UY">Uruguay</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Identificador del usuario:</td>
+                <td>
+                    <input name="CSBTCUSTOMERID" />
+                </td>
+            </tr>
+            <tr>
+                <td>IP:</td>
+                <td>
+                    <input name="CSBTIPADDRESS" />
+                </td>
+            </tr>
+            <tr>
+                <td>email:</td>
+                <td>
+                    <input name="CSBTEMAIL" />
+                </td>
+            </tr>
+            <tr>
+                <td>Primer Nombre</td>
+                <td>
+                    <input name="CSBTFIRSTNAME" />
+                </td>
+            </tr>
+            <tr>
+                <td>Apellido:</td>
+                <td>
+                    <input name="CSBTLASTNAME">
+                </td>
+            </tr>
+            <tr>
+                <td>telefono:</td>
+                <td>
+                    <input type="text" name="CSBTPHONENUMBER">
+                </td>
+            </tr>
+            <tr>
+                <td>Código Postal</td>
+                <td>
+                    <input type="text" name="CSBTPOSTALCODE">
+                </td>
+            </tr>
+            <tr>
+                <td>Provincia:</td>
+                <td>
+                    <select name="CSBTSTATE">
+                        <option value="C">CABA</option>
+                        <option value="B">Buenos Aires</option>
+                        <option value="K">Catamarca</option>
+                        <option value="H">Chaco</option>
+                        <option value="U">Chubut</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Domicilio:</td>
+                <td>
+                    <input type="text" name="CSBTSTREET1">
+                </td>
+            </tr>
+            <tr>
+                <td>Complemento del domicilio:</td>
+                <td>
+                    <input type="text" name="CSBTSTREET2">
+                </td>
+            </tr>
+            <tr>
+                <td>Moneda:</td>
+                <td>
+                    <input type="text" name="CSPTCURRENCY" value="ARS">
+                </td>
+            </tr>
+            <tr>
+                <td>Total: </td>
+                <td>
+                    <input type="text" name="CSPTGRANDTOTALAMOUNT" value="64.00">
+                </td>
+            </tr>
+            <tr>
+                <td>Canal de venta:</td>
+                <td>
+                    <select name="CSMDD6">
+                        <option value="Web">Web</option>
+                        <option value="Mobile">Mobile</option>
+                        <option value="Telefono">Telefono</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>días desde el registro del conprador:</td>
+                <td>
+                    <input type="text" name="CSMDD7">
+                </td>
+            </tr>
+            <tr>
+                <td>Usuario Guest:</td>
+                <td>
+                    <select name="CSMDD8">
+                        <option value="Y">yes</option>
+                        <option value="">no</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Customer password Hash:</td>
+                <td>
+                    <input type="text" name="CSMDD9">
+                </td>
+            </tr>
+            <tr>
+                <td>Historico de compras:</td>
+                <td>
+                    <input type="text" name="CSMDD10">
+                </td>
+            </tr>
+            <tr>
+                <td>Celular:</td>
+                <td>
+                    <input type="text" name="CSMDD11">
+                </td>
+            </tr>
+        </table>
+
+        <!-- RETAIL -->
+
+        <table id="retail_inputs">
+            <tr>
+                <td colspan="2">
+                    <h4>Parámetros Adicionales en el post inicial para el rubro RETAIL</h4>
+                </td>
+            </tr>
+            <tr>
+                <td>Ciudad de envío de la orden:</td>
+                <td>
+                    <input type="text" name="CSSTCITY">
+                </td>
+            </tr>
+            <tr>
+                <td>País de envío de la orden:</td>
+                <td>
+                    <input type="text" name="CSSTCOUNTRY">
+                </td>
+            </tr>
+            <tr>
+                <td>Mail del destinatario:</td>
+                <td>
+                    <input type="text" name="CSSTEMAIL">
+                </td>
+            </tr>
+            <tr>
+                <td>Nombre del destinatario:</td>
+                <td>
+                    <input type="text" name="CSSTFIRSTNAME">
+                </td>
+            </tr>
+            <tr>
+                <td>Apellido del destinatario:</td>
+                <td>
+                    <input type="text" name="CSSTLASTNAME">
+                </td>
+            </tr>
+            <tr>
+                <td>teléfono del destinatario:</td>
+                <td>
+                    <input type="text" name="CSSTPHONENUMBER">
+                </td>
+            </tr>
+            <tr>
+                <td>Código postal del domicilio de envío:</td>
+                <td>
+                    <input type="text" name="CSSTPOSTALCODE">
+                </td>
+            </tr>
+            <tr>
+                <td>Provincia de envío:</td>
+                <td>
+                    <select name="CSSTSTATE">
+                        <option value="C">CABA</option>
+                        <option value="B">Buenos Aires</option>
+                        <option value="K">Catamarca</option>
+                        <option value="H">Chaco</option>
+                        <option value="U">Chubut</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Domicilio de envío:</td>
+                <td>
+                    <input type="text" name="CSSTSTREET1">
+                </td>
+            </tr>
+            <tr>
+                <td>Localidad de envío:</td>
+                <td>
+                    <input type="text" name="CSSTSTREET2">
+                </td>
+            </tr>
+            <tr>
+                <td>Dead Line:</td>
+                <td>
+                    <input type="text" name="CSMDD12">
+                </td>
+            </tr>
+            <tr>
+                <td>Metodo de Despacho:</td>
+                <td>
+                    <input type="text" name="CSMDD13">
+                </td>
+            </tr>
+            <tr>
+                <td>Tax Bill:</td>
+                <td>
+                    <select name="" CSMDD14>
+                        <option value="Y">yes</option>
+                        <option value="N">no</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Promotional / Coupon Code:</td>
+                <td>
+                    <input type="text" name="CSMDD16">
+                </td>
+            </tr>
+            <tr>
+                <td>Código de producto</td>
+                <td>
+                    <select name="CSITPRODUCTCODE">
+                        <option value="adult_content">adult_content</option>
+                        <option value="coupon">coupon</option>
+                        <option value="default">default</option>
+                        <option value="electronic_good">electronic_good</option>
+                        <option value="electronic_software">electronic_software</option>
+                        <option value="gift_certificate">gift_certificate</option>
+                        <option value="handling_only">handling_only</option>
+                        <option value="service">service</option>
+                        <option value="shipping_and_handling">shipping_and_handling</option>
+                        <option value="shipping_only">shipping_only</option>
+                        <option value="subscription">subscription</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>descripción del producto:</td>
+                <td>
+                    <input type="text" name="CSITPRODUCTDESCRIPTION" value="art 1 descripcion#art 2 descripcion">
+                </td>
+            </tr>
+            <tr>
+                <td>nombre del producto:</td>
+                <td>
+                    <input type="text" name="CSITPRODUCTNAME" value="art 1#art 2">
+                </td>
+            </tr>
+            <tr>
+                <td>Codigo del producto:</td>
+                <td>
+                    <input type="text" name="CSITPRODUCTSKU" value="001#002">
+                </td>
+            </tr>
+            <tr>
+                <td>Monto Total:</td>
+                <td>
+                    <input type="text" name="CSITTOTALAMOUNT" value="64.00">
+                </td>
+            </tr>
+            <tr>
+                <td>cantidad:</td>
+                <td>
+                    <input type="text" name="CSITQUANTITY" value="2#1">
+                </td>
+            </tr>
+            <tr>
+                <td>Precios:</td>
+                <td>
+                    <input type="text" name="CSITUNITPRICE" value="30.00#4.00">
+                </td>
+            </tr>
+        </table>
+
+        <tr>
+            <td colspan="2">
+                <button type="submit" name="AMOUNT" value="64.00">total a a pagar $64.00</button>
+            </td>
+        </tr>
+    </form>
+</body>
+
+</html>

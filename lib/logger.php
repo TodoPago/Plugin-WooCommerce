@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname(__FILE__)."/log4php/Logger.php";
-
 class TodoPagoLogger {
 
 	public $log;

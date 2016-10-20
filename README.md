@@ -1,5 +1,5 @@
 <a name="inicio"></a>
-WooCommerce- módulo Todo Pago (v1.4.2)
+WooCommerce- módulo Todo Pago (v1.6.0)
 ============
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
@@ -8,7 +8,7 @@ Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
 - [Configuración](#configuracion)
  - [Activación](#activacion)
  - [Configuración plug in](#confplugin)
- - [Formulario Hibrido](#formHibrido)
+ - [Formulario Hibrido](#)
  - [Obtener datos de configuracion](#getcredentials)
  - [Configuración de Maximo de Cuotas](#maxcuotas)
 - [Prevencion de Fraude](#cybersource)
@@ -79,7 +79,10 @@ En la configuracion del plugin tambien estara la posibilidad de mostrarle al cli
 Para esto , en la configuracion se debe seleccionar la opcion Integrado en el campo de seleccion de fromulario
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/10-%20formulario%20hibrido.png)</br>
 <sub></br>Del lado del cliente el formulario se vera asi:</br></sub> 
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/11-%20formulario%20hibrido2.PNG)
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/14-%20formulario%20hibrido.PNG)
+</br>El formulario tiene dos formas de pago, ingresando los datos de una tarjeta ó utilizando la billetera de Todopago. Al ir a "Pagar con Billetera" desplegara una ventana que permitira ingresar a billetera y realizar el pago.</br>
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/15-%20billetera%20virtual.PNG)
+
 </br>
 [<sub>Volver a inicio</sub>](#inicio)
 
@@ -276,7 +279,7 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
   <thead>
   <tbody>
     <tr>
-      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.4.0</a></td>
+      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.6.0</a></td>
       <td>Stable (Current version)</td>
       <td>WordPress 3.7.5 <br />
           WooCommerce 2.3.5

@@ -1,9 +1,11 @@
 <?php
 
-use TodoPago\Sdk as Sdk;
+//use TodoPago\Sdk as Sdk;
 
 require_once(dirname(__FILE__).'/../../../../wp-blog-header.php');
-require_once(dirname(__FILE__).'/../lib/Sdk.php');
+//require_once(dirname(__FILE__).'/../lib/Sdk.php');
+require_once(dirname(__FILE__).'/../lib/vendor/autoload.php');
+
 http_response_code(200);
 
 global $wpdb;
@@ -18,7 +20,7 @@ $http_header = $esProductivo ? $arrayOptions['http_header_prod'] : $arrayOptions
 $header_decoded = json_decode(html_entity_decode($http_header,TRUE));
 $http_header = (!empty($header_decoded)) ? $header_decoded : array("authorization" => $http_header);
 
-$connector = new Sdk($http_header, $arrayOptions['ambiente']);
+$connector = new \TodoPago\Sdk($http_header, $arrayOptions['ambiente']);
 
 //opciones para el método getStatus 
 $optionsGS = array('MERCHANT'=>$_GET['merchant'],'OPERATIONID'=>$_GET['order_id']);

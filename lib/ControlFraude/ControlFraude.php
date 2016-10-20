@@ -210,26 +210,30 @@ abstract class ControlFraude {
 
 	private function _setDescription($cart_item_array){
 
-		$return = "";
-		$name = $cart_item_array['data']->post->post_title;
-		$description = $cart_item_array['data']->post->post_content;
-		$shortDescription = $cart_item_array['data']->post->post_excerpt;
-	
-		if($description == null or empty($description)){
+		$result = "product";
+		$name = $this->_sanitize_string($cart_item_array['data']->post->post_title);
+		$description = $this->_sanitize_string($cart_item_array['data']->post->post_content);
+		$shortDescription = $this->_sanitize_string($cart_item_array['data']->post->post_excerpt);
+		
+		$name = trim($name);
+		$description = trim($description);
+		$shortDescription = trim($shortDescription);
 
-			if($shortDescription == null or empty($shortDescription)){
-				$return = strip_tags($name);
-				$return = substr($this->_sanitize_string($return),0,50);
+		if( empty($description)){
+
+			if( empty($shortDescription)){
+				$result = strip_tags($name);
+				$result = substr($result,0,50);
 			}else{
-				$return = strip_tags($shortDescription);
-				$return = substr($this->_sanitize_string($return),0,50);
+				$result = strip_tags($shortDescription);
+				$result = substr($result,0,50);
 			}
 
 		}else{
-			$return = substr($this->_sanitize_string($description),0,50);
+			$result = substr($description,0,50);
 		}
 
-        return $return;
+        return $result;
 	}
 
 

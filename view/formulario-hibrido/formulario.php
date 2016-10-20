@@ -27,9 +27,9 @@
 					}
 				});
 
-				$("#MY_btnPagarConBilletera").hide();
-
 				$("#MY_btnConfirmarPago").click(_clean_errors);
+                                
+                                $("#MY_btnPagarConBilletera").click(_clean_errors);
 
 				$(".form-field").change(_unclean_errors);
 
@@ -118,6 +118,9 @@
 				</div>
 			</div>
 		</form>
+                <div id="tp-bt-wrapper" class="tp-right">
+			<button id="MY_btnPagarConBilletera" class="tp-button button alt"></button>
+		</div>
 		<div id="tp-bt-wrapper" class="tp-right">
 			<button id="MY_btnConfirmarPago" class="tp-button button alt"></button>
 		</div>
@@ -138,11 +141,6 @@
 			botonPagarId: 'MY_btnConfirmarPago',
 		});
 
-		window.TPFORMAPI.hybridForm.setItem({
-			publicKey: '<?php echo "$prk"; ?>',
-			defaultNombreApellido: '<?php echo "$firstname $lastname"; ?>',
-			defaultMail: '<?php echo "$email"; ?>'
-		});
 
 		function validationCollector(parametros) {
 			console.log("My validator collector");
@@ -163,6 +161,7 @@
 		function billeteraPaymentResponse(response) {
 			console.log("My wallet callback");
 			console.log(response.ResultCode + " : " + response.ResultMessage);
+                        document.location = "<?php echo "$return_URL_OK&Answer="; ?>" + response.AuthorizationKey;
 		}
 
 		function customPaymentSuccessResponse(response) {
@@ -170,6 +169,8 @@
 			console.log(response.ResultCode + " : " + response.ResultMessage);
 			document.location = "<?php echo "$return_URL_OK&Answer="; ?>" + response.AuthorizationKey;
 		}
+                
+                
 
 		function customPaymentErrorResponse(response) {
 			console.log("Mi custom payment error callback");
@@ -186,5 +187,17 @@
 		}
 
 	</script>
+
+    <script>
+    	jQuery(document).ready( function() { 
+    		jQuery.get( "<?php echo get_site_url() ?>?TodoPago_redirect=true&form=hib&order=<?php echo $order->id ?>",function( data ) { 
+				window.TPFORMAPI.hybridForm.setItem({
+					publicKey: JSON.parse(data).prk,
+					defaultNombreApellido: '<?php echo "$firstname $lastname"; ?>',
+					defaultMail: '<?php echo "$email"; ?>'
+				});
+    		}); 
+    	});
+    </script>
 
 	</html>
