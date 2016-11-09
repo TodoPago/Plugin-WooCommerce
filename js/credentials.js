@@ -22,7 +22,7 @@ jQuery(function ($) {
         function getCredentials (user, password, mode){
             
           $.ajax({type: 'POST',
-                     url: "../wp-content/plugins/woocommerce-plugin/view/credentials.php",
+                     url: BASE_URL_CREDENTIAL,
                      data: { 'user' :  user,
                              'password' :  password,
                              'mode' :  mode

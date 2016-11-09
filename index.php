@@ -2,11 +2,11 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.6.0
+    Version: 1.6.1
     Author: Todo Pago
 */
 
-define('TODOPAGO_PLUGIN_VERSION','1.6.0');
+define('TODOPAGO_PLUGIN_VERSION','1.6.1');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -306,6 +306,9 @@ function woocommerce_todopago_init(){
            
             $urlCredentials = plugins_url('js/credentials.js', __FILE__);            
             echo '<script type="text/javascript" src="' . $urlCredentials . '"></script>';
+            
+            $urlCredentialsPhp = plugins_url('view/credentials.php', __FILE__); 
+            echo '<script type="text/javascript">var BASE_URL_CREDENTIAL = "'.$urlCredentialsPhp.'";</script>';
 
             include_once dirname(__FILE__)."/view/status.php";
         }
@@ -326,7 +329,7 @@ function woocommerce_todopago_init(){
                 }
 
                 $order = new WC_Order($order_id);
-              
+                
                 if($order->payment_method == 'todopago'){
                     global $woocommerce;
                     $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user, $order_id, true);
@@ -473,8 +476,13 @@ function woocommerce_todopago_init(){
         //Se ejecuta luego de pagar con el formulario
         function second_step_todopago(){
 
-            if(isset($_GET['order'])){
+            if(isset($_GET['order']) || isset($_GET['key'])){
                 $order_id = intval($_GET['order']);
+               
+                if(!isset($_GET['order'])) {
+                    $order_id = wc_get_order_id_by_order_key($_GET['key']);
+                }
+
                 $order = new WC_Order($order_id);
 
                 if($order->payment_method == 'todopago'){
@@ -538,11 +546,13 @@ function woocommerce_todopago_init(){
             );
 
             if ($data_GAA['response_GAA']['StatusCode']== -1){
+
                 $this -> setOrderStatus($order,'estado_aprobacion');
                 $logger->info('estado de orden '.$order->post_status);
 
                 //Reducir stock
                 $order->reduce_order_stock();
+
                 //Vaciar carrito
                 global $woocommerce;
                 $woocommerce->cart->empty_cart();
@@ -697,16 +707,26 @@ function woocommerce_todopago_init(){
             }
         }
 
+
         function process_payment($order_id){
             global $woocommerce;
             $order = new WC_Order( $order_id );
 
-            $result = array (     
-                 'result' => 'success', 
-                 'redirect' => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+            if(isset($_GET["pay_for_order"])  && $_GET["pay_for_order"] == true) {
 
+                $result = array (     
+                    'result' => 'success', 
+                    'redirect' => get_site_url().'/?TodoPago_redirect=true&form=ext&order='.$order_id
+                );
+                
+            } else {
+                $result = array (     
+                     'result' => 'success', 
+                     'redirect' => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+                );
 
-            );
+            }
+
    
             return $result;
         }
