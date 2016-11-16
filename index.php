@@ -2,11 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.6.1
+    Version: 1.6.2
     Author: Todo Pago
 */
 
-define('TODOPAGO_PLUGIN_VERSION','1.6.1');
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+define('TODOPAGO_PLUGIN_VERSION','1.6.2');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -307,7 +309,7 @@ function woocommerce_todopago_init(){
             $urlCredentials = plugins_url('js/credentials.js', __FILE__);            
             echo '<script type="text/javascript" src="' . $urlCredentials . '"></script>';
             
-            $urlCredentialsPhp = plugins_url('view/credentials.php', __FILE__); 
+            $urlCredentialsPhp = wp_nonce_url(plugins_url('view/credentials.php', __FILE__),"todopago_getcredentials_config_form"); 
             echo '<script type="text/javascript">var BASE_URL_CREDENTIAL = "'.$urlCredentialsPhp.'";</script>';
 
             include_once dirname(__FILE__)."/view/status.php";
@@ -318,7 +320,7 @@ function woocommerce_todopago_init(){
             global $wpdb;
             if(isset($_GET["second_step"])){
                 //Second Step
-                $this -> second_step_todopago();
+                return $this -> second_step_todopago();
             }else{
                 global $woocommerce;
                 $order_id = $woocommerce->session->__get('order_awaiting_payment');
@@ -376,7 +378,7 @@ function woocommerce_todopago_init(){
             $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
             
             if($this->url_after_redirection == "order_received"){
-                        $return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true&order='. $order->id;
+                        $return_URL_OK = $order->get_checkout_order_received_url();
                     }else{
                      $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
                        
@@ -458,7 +460,7 @@ function woocommerce_todopago_init(){
                     $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
                     
                     if($this->url_after_redirection == "order_received"){
-                        $return_URL_OK = $order->get_checkout_order_received_url().'&second_step=true';
+                        $return_URL_OK = $order->get_checkout_order_received_url();
                     }else{
                         $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
                         
@@ -489,7 +491,7 @@ function woocommerce_todopago_init(){
                     global $woocommerce;
                     $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user, $order_id, true);
                     $data_GAA = $this->call_GAA($order_id, $logger);
-                    $this->take_action($order, $data_GAA, $logger);
+                    return $this->take_action($order, $data_GAA, $logger);
                 }
             }
 
@@ -557,10 +559,10 @@ function woocommerce_todopago_init(){
                 global $woocommerce;
                 $woocommerce->cart->empty_cart();
 
-                echo "<h2>Operación " . $order->id . " exitosa</h2>";
-                echo "<script>
-                jQuery('.entry-title').html('Compra finalizada');
-              </script>";
+                if($this->url_after_redirection != "order_received"){
+                    echo "<h2>Operación " . $order->id . " exitosa</h2>";
+                    echo "<script>jQuery('.entry-title').html('Compra finalizada');</script>";
+                } 
             }else{
                 $this -> setOrderStatus($order,'estado_rechazo');
                 $this -> _printErrorMsg();

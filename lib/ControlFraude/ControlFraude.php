@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 include_once dirname(__FILE__).'/phone.php';
 
 abstract class ControlFraude {

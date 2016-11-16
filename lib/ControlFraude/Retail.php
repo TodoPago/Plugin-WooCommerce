@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 include_once dirname(__FILE__).'/ControlFraude.php';
 
 class ControlFraude_Retail extends ControlFraude{

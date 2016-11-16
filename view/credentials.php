@@ -1,9 +1,6 @@
 <?php
-//require_once(dirname(__FILE__).'/../lib/Data/User.php');
-//require_once(dirname(__FILE__).'/../lib/Sdk.php');
-//require_once(dirname(__FILE__).'/../lib/Exception/ConnectionException.php');
-//require_once(dirname(__FILE__).'/../lib/Exception/ResponseException.php');
-//require_once(dirname(__FILE__).'/../lib/Exception/Data/EmptyFieldException.php');
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require_once(dirname(__FILE__).'/../lib/vendor/autoload.php');
 
@@ -15,6 +12,14 @@ use TodoPago\Exception\Data\EmptyFieldException;*/
  
 
  if((isset($_POST['user']) && !empty($_POST['user'])) &&  (isset($_POST['password']) && !empty($_POST['password']))){
+
+    if(wp_verify_nonce( $_REQUEST['_wpnonce'], "todopago_getcredentials_config_form" ) == false) {
+        $response = array( 
+            "mensajeResultado" => "Error de autorizacion"
+        );  
+        echo json_encode($response);
+
+    }
 
      $userArray = array(
         "user" => trim($_POST['user']), 

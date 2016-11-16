@@ -1,12 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 //use TodoPago\Sdk as Sdk;
 
 require_once(dirname(__FILE__).'/../../../../wp-blog-header.php');
 //require_once(dirname(__FILE__).'/../lib/Sdk.php');
 require_once(dirname(__FILE__).'/../lib/vendor/autoload.php');
-
-http_response_code(200);
 
 global $wpdb;
 $row = $wpdb -> get_row(
