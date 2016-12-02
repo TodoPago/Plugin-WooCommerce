@@ -52,9 +52,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     });
 
     function verstatus (order){
-      var merchant = <?php echo $merchant ?>;
-      var url_get_status = '<?php echo $urlGetStatus ?>';
-      jQuery.get(url_get_status, {order_id:order,merchant:merchant}).done(llegadaDatos);
+      var merchant = '<?php echo $merchant ?>';
+      var url_get_status = 'admin-ajax.php';
+      jQuery.get(url_get_status, {action:'getStatus',order_id:order,merchant:merchant}).done(llegadaDatos);
       return false;                                           
     }
 

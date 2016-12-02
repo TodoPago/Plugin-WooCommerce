@@ -8,7 +8,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.6.2');
+define('TODOPAGO_PLUGIN_VERSION','1.6.3');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -94,6 +94,10 @@ function woocommerce_todopago_init(){
             $this -> estado_rechazo   = $this -> todopago_getValueOfArray($this -> settings,'estado_rechazo');
             $this -> estado_offline   = $this -> todopago_getValueOfArray($this -> settings,'estado_offline');
 
+            $this -> wpnonce_credentials = $this -> todopago_getValueOfArray($this -> settings,'wpnonce');
+
+
+
             $this -> msg['message'] = "";
             $this -> msg['class'] = "";
 
@@ -125,7 +129,7 @@ function woocommerce_todopago_init(){
         }
         
         function init_form_fields(){
-            
+     
             global $woocommerce;
             require_once $woocommerce -> plugin_path() . '/includes/wc-order-functions.php';
 
@@ -218,21 +222,21 @@ function woocommerce_todopago_init(){
                         )                    
                 ),         
                 
-                'credentials' => array(
-                    'title' => 'Credenciales',
+                'credentials_dev' => array(
+                    'title' => 'Credenciales Desarrollo',
                     'type'=> 'title'),
                 
-                'user' => array(
+                'user_dev' => array(
                     'title' => 'User',
                     'type'=> 'text',
                     'description' => 'User Todo Pago'),
                 
-                'password' => array(
+                'password_dev' => array(
                     'title' => 'Password',
                     'type'=> 'text',
                     'description' => 'Password Todo Pago'),
           
-                'btnCredentials' => array(
+                'btnCredentials_dev' => array(
                     'type'=> 'button',
                     'value' => 'Obtener Credenciales',
                     'class' => 'button-primary'),
@@ -246,30 +250,49 @@ function woocommerce_todopago_init(){
                 'http_header_test' => array(
                     'title' => 'HTTP Header',
                     'type' => 'text',
-                    'description' => "Authorization para el hearder. Ejemplo: <b>PRISMA 912EC803B2CE49E4A541068D12345678</b>"),
+                    'description' => "API Keys que se obtiene en el portal de Todo Pago. Ejemplo: <b>TODOPAGO 912EC803B2CE49E4A541068D12345678</b>"),
                 'security_test' => array(
                     'title' => 'Security',
                     'type' => 'text',
-                    'description' => 'Código provisto por Todo Pago'),
+                    'description' => 'API Keys sin TODOPAGO. Ejemplo: <b>912EC803B2CE49E4A541068D12345678</b>'),
                 'merchant_id_test' => array(
                     'title' => 'Merchant ID',
                     'type' => 'text',
-                    'description' => 'N&uacute;mero de comercio provisto por Todo Pago'),
+                    'description' => 'N&uacute;mero de comercio (MerchantId) provisto por el portal de Todo Pago'),
+
+                'credentials_prod' => array(
+                    'title' => 'Credenciales Producción',
+                    'type'=> 'title'),
+                
+                'user_prod' => array(
+                    'title' => 'User',
+                    'type'=> 'text',
+                    'description' => 'User Todo Pago'),
+                
+                'password_prod' => array(
+                    'title' => 'Password',
+                    'type'=> 'text',
+                    'description' => 'Password Todo Pago'),
+          
+                'btnCredentials_prod' => array(
+                    'type'=> 'button',
+                    'value' => 'Obtener Credenciales',
+                    'class' => 'button-primary'),
 
                 'titulo_produccion' => array( 'title' => 'Ambiente de Producción', 'type' => 'title', 'description' => 'Datos correspondientes al ambiente de producción', 'id' => 'produccion_options' ),
 
                 'http_header_prod' => array(
                     'title' => 'HTTP Header',
                     'type' => 'text',
-                    'description' => 'Authorization para el hearder. Ejemplo: <b>PRISMA 912EC803B2CE49E4A541068D12345678</b>'),
+                    'description' => 'API Keys que se obtiene en el portal de Todo Pago. Ejemplo: <b>TODOPAGO 912EC803B2CE49E4A541068D12345678</b>'),
                 'security_prod' => array(
                     'title' => 'Security',
                     'type' => 'text',
-                    'description' => 'Código provisto por Todo Pago'),
+                    'description' => 'API Keys sin TODOPAGO. Ejemplo: <b>912EC803B2CE49E4A541068D12345678</b>'),
                 'merchant_id_prod' => array(
                     'title' => 'Merchant ID',
                     'type' => 'text',
-                    'description' => 'N&uacute;mero de comercio provisto por Todo Pago'),
+                    'description' => 'N&uacute;mero de comercio (MerchantId) provisto por el portal de Todo Pago'),
 
                 'titulo_estados_pedidos' => array( 'title' => 'Estados del Pedido', 'type' => 'title', 'description' => 'Datos correspondientes al estado de los pedidos', 'id' => 'estados_pedido_options' ),
 
@@ -294,7 +317,12 @@ function woocommerce_todopago_init(){
                 'estado_offline' => array(
                     'title' => 'Estado cuando la transacción ha<br>sido offline',
                     'type' => 'select',
-                    'options' => wc_get_order_statuses())
+                    'options' => wc_get_order_statuses()),
+
+                'wpnonce' => array(
+                        'type'  => 'hidden',
+                        'placeholder' => wp_create_nonce( 'getCredentials')
+                    )
             );
         }
 
@@ -732,8 +760,9 @@ function woocommerce_todopago_init(){
    
             return $result;
         }
-
     }//End WC_TodoPago_Gateway
+
+    class_alias("WC_TodoPago_Gateway","todopago");
 
     //Agrego el campo teléfono de envío para cybersource
     function todopago_custom_override_checkout_fields($fields) {
@@ -817,3 +846,140 @@ function my_init() {
 // No eliminar esta linea, en el Readme se indica que esta linea debe  ser descomentada en el caso de tener conflictos con Jquery
 //add_action('init', 'my_init');
 
+
+add_action('wp_ajax_getCredentials', 'getCredentials' ); // executed when logged in
+add_action('wp_ajax_nopriv_getCredentials', 'getCredentials' ); 
+
+function getCredentials(){
+    if((isset($_POST['user']) && !empty($_POST['user'])) &&  (isset($_POST['password']) && !empty($_POST['password']))){
+
+        if(wp_verify_nonce( $_REQUEST['_wpnonce'], "getCredentials" ) == false) {
+            $response = array( 
+                "mensajeResultado" => "Error de autorizacion"
+            );  
+            echo json_encode($response);
+            exit;
+        }
+
+        $userArray = array(
+            "user" => trim($_POST['user']), 
+            "password" => trim($_POST['password'])
+        );
+
+        $http_header = array();
+
+        //ambiente developer por defecto 
+        $mode = "test";
+        if($_POST['mode'] == "prod"){
+            $mode = "prod";
+        }
+
+        try {
+            $connector = new \TodoPago\Sdk($http_header, $mode);
+            $userInstance = new \TodoPago\Data\User($userArray);
+            $rta = $connector->getCredentials($userInstance);
+
+            $security = explode(" ", $rta->getApikey()); 
+            $response = array( 
+                "codigoResultado" => 1,
+                "merchandid" => $rta->getMerchant(),
+                "apikey" => $rta->getApikey(),
+                "security" => $security[1]
+            );
+        }catch(\TodoPago\Exception\ResponseException $e){
+            $response = array(
+                "mensajeResultado" => $e->getMessage()
+            );
+        }catch(\TodoPago\Exception\ConnectionException $e){
+            $response = array(
+                "mensajeResultado" => $e->getMessage()
+            );
+        }catch(\TodoPago\Exception\Data\EmptyFieldException $e){
+            $response = array(
+                "mensajeResultado" => $e->getMessage()
+            );
+        }
+        echo json_encode($response);
+    }else{
+        $response = array( 
+            "mensajeResultado" => "Ingrese usuario y contraseña de Todo Pago"
+        );  
+        echo json_encode($response);
+    }
+    exit;
+}
+
+add_action('wp_ajax_getStatus', 'getStatus' ); // executed when logged in
+add_action('wp_ajax_nopriv_getStatus', 'getStatus' ); 
+
+function getStatus(){
+    global $wpdb;
+
+    $row = $wpdb -> get_row(
+    "SELECT option_value FROM wp_options WHERE option_name = 'woocommerce_todopago_settings'"
+    );
+    $arrayOptions = unserialize($row -> option_value);
+
+    $esProductivo = $arrayOptions['ambiente'] == "prod";
+
+    $http_header = $esProductivo ? $arrayOptions['http_header_prod'] : $arrayOptions['http_header_test'];
+    $header_decoded = json_decode(html_entity_decode($http_header,TRUE));
+    $http_header = (!empty($header_decoded)) ? $header_decoded : array("authorization" => $http_header);
+
+    $connector = new \TodoPago\Sdk($http_header, $arrayOptions['ambiente']);
+
+    //opciones para el método getStatus 
+    $optionsGS = array('MERCHANT'=>$_GET['merchant'],'OPERATIONID'=>$_GET['order_id']);
+    $status = $connector->getStatus($optionsGS);
+
+    $rta = '';
+    $refunds = $status['Operations']['REFUNDS'];
+    $refounds = $status['Operations']['refounds'];
+
+    $auxArray = array(
+         "refound" => $refounds, 
+         "REFUND" => $refunds
+         );
+
+    if($refunds != null){  
+        $aux = 'REFUND'; 
+        $auxColection = 'REFUNDS'; 
+    }else{
+        $aux = 'refound';
+        $auxColection = 'refounds'; 
+    }
+
+
+    if (isset($status['Operations']) && is_array($status['Operations']) ) {
+      
+        foreach ($status['Operations'] as $key => $value) {   
+            if(is_array($value) && $key == $auxColection){
+                $rta .= "$key: \n";
+                foreach ($auxArray[$aux] as $key2 => $value2) {              
+                    $rta .= $aux." \n";                
+                    if(is_array($value2)){                    
+                        foreach ($value2 as $key3 => $value3) {
+                            if(is_array($value3)){                    
+                                 foreach ($value3 as $key4 => $value4) {
+                                    $rta .= "   - $key4: $value4 \n";
+                                }
+                            }                     
+                        }
+                    }
+                }            
+            }else{             
+                if(is_array($value)){
+                    $rta .= "$key: \n";
+                }else{
+                    $rta .= "$key: $value \n";
+                }
+            }
+        }
+    }else{
+       $rta = 'No hay operaciones para esta orden.';
+    }
+ 
+    echo($rta);
+
+    exit;
+}

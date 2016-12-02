@@ -6,24 +6,40 @@
 
 jQuery(function ($) {
     
-        $("#woocommerce_todopago_btnCredentials").val("Obtener Credenciales");
+        $("#woocommerce_todopago_btnCredentials_dev").val("Obtener Credenciales");
+        $("#woocommerce_todopago_btnCredentials_prod").val("Obtener Credenciales");
+
+        $("#woocommerce_todopago_password_dev").attr("type","password");
+        $("#woocommerce_todopago_password_prod").attr("type","password");
         var globalError = false;
         
-	$("#woocommerce_todopago_btnCredentials").click(function() {
+	$("#woocommerce_todopago_btnCredentials_dev").click(function() {
             
-            var user = $("#woocommerce_todopago_user").val();
-            var password = $("#woocommerce_todopago_password").val();
-            
-            getCredentials(user, password, 'test');
-            getCredentials(user, password, 'prod');  
+            var user = $("#woocommerce_todopago_user_dev").val();
+            var password = $("#woocommerce_todopago_password_dev").val();
+            var wpnonce = $("#woocommerce_todopago_wpnonce").attr('placeholder');
+
+            getCredentials(user, password, 'test', wpnonce);
                                
          }); 
-        
-        function getCredentials (user, password, mode){
+
+        $("#woocommerce_todopago_btnCredentials_prod").click(function() {
             
-          $.ajax({type: 'POST',
-                     url: BASE_URL_CREDENTIAL,
-                     data: { 'user' :  user,
+            var user = $("#woocommerce_todopago_user_prod").val();
+            var password = $("#woocommerce_todopago_password_prod").val();
+            var wpnonce = $("#woocommerce_todopago_wpnonce").attr('placeholder');
+
+            getCredentials(user, password, 'prod', wpnonce);
+                               
+         }); 
+
+        function getCredentials (user, password, mode, nonce){
+            $.ajax({type: 'POST',
+                     url: 'admin-ajax.php',
+                     data: { 
+                             'action' : 'getCredentials',
+                             '_wpnonce' : nonce,
+                             'user' :  user,
                              'password' :  password,
                              'mode' :  mode
                            },
@@ -40,7 +56,7 @@ jQuery(function ($) {
                                           break;               
                          }
                      },
-                });     
+            });     
         }
         
         
