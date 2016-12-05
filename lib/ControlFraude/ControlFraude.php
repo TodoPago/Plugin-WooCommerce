@@ -18,12 +18,12 @@ abstract class ControlFraude {
 		$datosCF = $this->completeCF();
 		return array_merge($datosCF, $this->completeCFVertical());
 	}
-
+	
 	private function completeCF(){
 		$payDataOperacion = array();
 
-                $payDataOperacion['AMOUNT'] = $this->order->order_total;
-                $payDataOperacion['EMAILCLIENTE'] = $this->order->billing_email;
+        $payDataOperacion['AMOUNT'] = $this->order->order_total;
+        $payDataOperacion['EMAILCLIENTE'] = $this->order->billing_email;
 		$payDataOperacion['CSBTCITY'] = $this->getField($this->order->billing_city);
 		$payDataOperacion['CSBTCOUNTRY'] = $this->order->billing_country;
 		$payDataOperacion['CSBTCUSTOMERID'] = $this->order->customer_user;
@@ -113,11 +113,11 @@ abstract class ControlFraude {
 		$susts = array('Á','á','É','é','Í','í','Ó','ó','Ú','ú','Ü','ü','Ṅ','ñ');
 		$string = str_replace($cods, $susts, $string);
 
-		$no_permitidas= array ("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","À","Ã","Ì","Ò","Ù","Ã™","Ã ","Ã¨","Ã¬","Ã²","Ã¹","ç","Ç","Ã¢","ê","Ã®","Ã´","Ã»","Ã‚","ÃŠ","ÃŽ","Ã”","Ã›","ü","Ã¶","Ã–","Ã¯","Ã¤","«","Ò","Ã","Ã„","Ã‹");
-		$permitidas= array ("a","e","i","o","u","A","E","I","O","U","n","N","A","E","I","O","U","a","e","i","o","u","c","C","a","e","i","o","u","A","E","I","O","U","u","o","O","i","a","e","U","I","A","E");
+		$no_permitidas= array ("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","À","Ã","Ì","Ò","Ù","Ã™","Ã ","Ã¨","Ã¬","Ã²","Ã¹","ç","Ç","Ã¢","ê","Ã®","Ã´","Ã»","Ã‚","ÃŠ","ÃŽ","Ã”","Ã›","ü","Ã¶","Ã–","Ã¯","Ã¤","«","Ò","Ã","Ã„","Ã‹", "&");
+		$permitidas= array ("a","e","i","o","u","A","E","I","O","U","n","N","A","E","I","O","U","a","e","i","o","u","c","C","a","e","i","o","u","A","E","I","O","U","u","o","O","i","a","e","U","I","A","E","");
 		$string = str_replace($no_permitidas, $permitidas ,$string);
                 
-                $string = str_replace('#', '', $string);
+        $string = str_replace('#', '', $string);
 
 		return $string;
 	}
@@ -143,15 +143,14 @@ abstract class ControlFraude {
                             $terms = get_the_terms($cart_item_array['product_id'], 'product_cat');
                             $product_cat = "default";
                             if($terms && ! is_wp_error($terms)){
-				$product_cat = $terms[0]->name;
+								$product_cat = $terms[0]->name;
                             }
 
-                            $productcode_array[] = $product_cat;
+                            $productcode_array[] = $this->_sanitize_string($product_cat);
 
                             $descripcion = $this->_setDescription($cart_item_array);
                             $description_array[] = $descripcion;
-
-                            $name_array[] = str_replace('#', '', $cart_item_array['data']->post->post_title);
+                            $name_array[] = str_replace('#', '', $this->_sanitize_string($cart_item_array['data']->post->post_title) );
                             $sku_array[] = str_replace('#', '', empty($sku) ? $cart_item_array['product_id'] : $sku);
                             $totalamount_array[] = number_format($cart_item_array['line_total'],2,".","");
                             $quantity_array[] = $cart_item_array['quantity'];
@@ -168,12 +167,12 @@ abstract class ControlFraude {
                             $terms = get_the_terms($value['product_id'], 'product_cat');
                             $product_cat = "default";
                             if($terms && ! is_wp_error($terms)){
-				$product_cat = $terms[0]->name;
+								$product_cat = $terms[0]->name; // set sanitize
                             }       
                             
-                            $productcode_array[] = $product_cat;
+                            $productcode_array[] = $this->_sanitize_string($product_cat);
                             
-                            $descripcion = str_replace('#', '', $value['name']);
+                            $descripcion = str_replace('#', '', $this->_sanitize_string($value['name']));
                             $description_array[] = $descripcion;
                             $name_array[] = $descripcion; 
                             $sku_array[] = str_replace('#', '', empty($sku) ? $value['product_id'] : $sku);
