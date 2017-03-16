@@ -77,7 +77,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 						<select id="promosCbx" class="form-field"></select>
 						<label id="labelPromotionTextId" class="left tp-label"></label>
 						<div class="clear"></div>
-					</div>.
+					</div>
+					<!-- Para los casos en el que el comercio opera con PEI -->
+					<div class="form-row tp-no-cupon">
+						<label id="labelPeiCheckboxId"></label>
+						<input id="peiCbx"/>
+					</div>
+
 					<div class="form-row tp-no-cupon" data-validate_classes="validate-required">
 						<label for="numeroTarjetaTxt">N&uacute;mero <abbr class="required" title="obligatorio">*</abbr></label>
 						<input id="numeroTarjetaTxt" class="input-text form-field" />
@@ -114,10 +120,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 						<input id="emailTxt" class="input-text form-field" />
 						<br/>
 					</div>
+					<div><!-- Para los casos en el que el comercio opera con PEI -->
+				    	<label id="labelPeiTokenTextId"></label>
+						<input id="peiTokenTxt"/>
+					</div>
 				</div>
 			</div>
 		</form>
-                <div id="tp-bt-wrapper" class="tp-right">
+        <div id="tp-bt-wrapper" class="tp-right">
 			<button id="MY_btnPagarConBilletera" class="tp-button button alt"></button>
 		</div>
 		<div id="tp-bt-wrapper" class="tp-right">

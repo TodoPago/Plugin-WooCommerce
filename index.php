@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.6.4
+    Version: 1.7.0
     Author: Todo Pago
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.6.4');
+define('TODOPAGO_PLUGIN_VERSION','1.7.0');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -399,17 +399,18 @@ function woocommerce_todopago_init(){
             $datosCs = $controlFraude->getDataCF();
 
             //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
- 
-            $home = home_url();
+
+            $home = home_url("/");
 
             $arrayHome = explode ("/", $home); 
-            $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
-            
+            $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
+
             if($this->url_after_redirection == "order_received"){
                         $return_URL_OK = $order->get_checkout_order_received_url();
                     }else{
-                     $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
-                       
+                     $return_URL_OK = $order->get_checkout_order_received_url();
+//                     $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
+
                     }
 
             $esProductivo = $this->ambiente == "prod";
@@ -482,15 +483,16 @@ function woocommerce_todopago_init(){
 
 	            //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
                     
-                    $home = home_url();
+                    $home = home_url("/");
 
                     $arrayHome = explode ("/", $home); 
-                    $return_URL_ERROR = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
-                    
+	            $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
+
                     if($this->url_after_redirection == "order_received"){
                         $return_URL_OK = $order->get_checkout_order_received_url();
                     }else{
-                        $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
+                        $return_URL_OK = $order->get_checkout_order_received_url();
+                        //$return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
                         
                     }
 
@@ -544,7 +546,7 @@ function woocommerce_todopago_init(){
             $logger->info("HTTP_HEADER: ".json_encode($http_header));
             $connector = new \TodoPago\Sdk($http_header, $this -> ambiente);
             
-            $logger->info("PARAMETROS GAA: ".json_encode($params_GAA));
+ //           $logger->info("PARAMETROS GAA: ".json_encode($params_GAA));
             $response_GAA = $connector->getAuthorizeAnswer($params_GAA);
             $logger->info('response GAA '.json_encode($response_GAA));
 
@@ -593,7 +595,9 @@ function woocommerce_todopago_init(){
                 } 
             }else{
                 $this -> setOrderStatus($order,'estado_rechazo');
-                $this -> _printErrorMsg();
+                //$this -> _printErrorMsg();
+		        $redirect_url = add_query_arg( 'wc_error', urlencode("Su pago no ha sido procesado. Mensaje de TodoPago:" . $data_GAA['response_GAA']['StatusMessage']), $order->get_cancel_order_url() );
+		         wp_redirect($redirect_url);
             }
 
         }
@@ -671,16 +675,23 @@ function woocommerce_todopago_init(){
         public function process_refund( $order_id, $amount = null, $reason = '' ) {
             global $woocommerce;
             //IMPORTANTE EXCEPTIONS: WooCommerce las capturará y las mostrará en un alert, esta es la herramienta que se dipone para comunicarse con el usuario, he probado con echo y no lo he logrado.
-
+			
+            $order = new WC_Order( $order_id );
+            
+            //sí la transacción no se completó , no permito reembolsar
+            if($order->get_status()!="completed"){
+            	throw new exception("No se puede reembolsar una transacción incompleta");
+            }
+            
             $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $this->getMerchant(), $order_id, true);
             //configuración común a ambos servicios.
-            $row = get_post_meta($_GET["order"], 'response_SAR', true);
+            $row = get_post_meta($order_id, 'response_SAR', true);
             $response_SAR = unserialize($row);
             
             $options_return = array(
                     "Security" => $this->getSecurity(),
                     "Merchant" => $this->getMerchant(),
-                    "RequestKey" => $response_SAR["URL_Request"]
+                    "RequestKey" => $response_SAR["RequestKey"]
             );
 
             //Intento instanciar la Sdk, si la configuración está mal, le avisará al usuario.

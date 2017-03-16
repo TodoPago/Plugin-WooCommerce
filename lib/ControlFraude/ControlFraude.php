@@ -154,7 +154,7 @@ abstract class ControlFraude {
                             $sku_array[] = str_replace('#', '', empty($sku) ? $cart_item_array['product_id'] : $sku);
                             $totalamount_array[] = number_format($cart_item_array['line_total'],2,".","");
                             $quantity_array[] = $cart_item_array['quantity'];
-                            $price_array[] = number_format($cart_item_array['data']->price,2,".","");
+                            $price_array[] = number_format($cart_item_array['line_total']/$cart_item_array['quantity'],2,".","");
                         }    
                 }else{
                     
@@ -178,7 +178,7 @@ abstract class ControlFraude {
                             $sku_array[] = str_replace('#', '', empty($sku) ? $value['product_id'] : $sku);
                             $totalamount_array[] = number_format($value['line_total'],2,".","");
                             $quantity_array[] = $value['qty'];
-                            $price_array[] = number_format($value['line_subtotal'],2,".","");
+                            $price_array[] = number_format($value['line_total']/$value['qty'],2,".","");
                         }
                     }
                     
