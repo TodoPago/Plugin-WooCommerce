@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.8.0
+    Version: 1.8.1
     Author: Todo Pago
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.8.0');
+define('TODOPAGO_PLUGIN_VERSION','1.8.1');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -377,7 +377,7 @@ function woocommerce_todopago_init(){
                 
                 if($order->payment_method == 'todopago'){
                     global $woocommerce;
-                    $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user, $order_id, true);
+                    $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user!=null?$order->customer_user:"guest", $order_id, true);
                     $this->prepare_order($order, $logger);
                     $paramsSAR = $this->get_paydata($order, $logger);
                     $response_sar = $this->call_sar($paramsSAR, $logger);
@@ -492,18 +492,18 @@ function woocommerce_todopago_init(){
                 $order = new WC_Order($order_id);
 
 if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
-+        		
-+        			$this -> setOrderStatus($order,'estado_rechazo');
-+        			//$this -> _printErrorMsg();
-+        			$redirect_url = add_query_arg( 'wc_error', urlencode($_GET['error_message']), $order->get_cancel_order_url() );
-+        			wp_redirect($redirect_url);
-+        			return;
-+        		
-+        		}
+        		
+        			$this -> setOrderStatus($order,'estado_rechazo');
+        			//$this -> _printErrorMsg();
+        			$redirect_url = add_query_arg( 'wc_error', urlencode($_GET['error_message']), $order->get_cancel_order_url() );
+        			wp_redirect($redirect_url);
+        			return;
+        		
+        		}
 
                 if($order->payment_method == 'todopago'){
                     global $woocommerce;
-                    $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user, $order_id, true);
+                    $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user!=null?$order->customer_user:"guest", $order_id, true);
                     $data_GAA = $this->call_GAA($order_id, $logger);
 
 		    ////////////////////////////////////////////////////////////////////
