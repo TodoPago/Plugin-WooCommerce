@@ -1,7 +1,8 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-
+    add_filter('show_admin_bar', '__return_false');
+get_header();
 ?>
 	<html>
 
@@ -95,9 +96,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 						<div class="clear"></div>
 					</div>
 					<div class="form-row form-row-last tp-no-cupon" data-validate_classes="validate-required">
-						<label for="codigoSeguridadTxt">C&oacute;d. de seguridad <abbr class="required" title="obligatorio">*</abbr></label>
+						<label id="labelCodSegTextId" for="codigoSeguridadTxt">C&oacute;d. de seguridad <abbr class="required" title="obligatorio">*</abbr></label>
 						<input id="codigoSeguridadTxt" class="left input-text form-field" />
-						<span id="labelCodSegTextId" class="left tp-label"></span>
 						<div class="clear"></div>
 					</div>
 				</div>
@@ -170,21 +170,19 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		function billeteraPaymentResponse(response) {
 			console.log("My wallet callback");
 			console.log(response.ResultCode + " : " + response.ResultMessage);
-                        document.location = "<?php echo "$return_URL_OK&Answer="; ?>" + response.AuthorizationKey;
+            editResponse(response,true);
 		}
 
 		function customPaymentSuccessResponse(response) {
 			console.log("My custom payment success callback");
 			console.log(response.ResultCode + " : " + response.ResultMessage);
-			document.location = "<?php echo "$return_URL_OK&Answer="; ?>" + response.AuthorizationKey;
+			editResponse(response,true);
 		}
-                
-                
 
 		function customPaymentErrorResponse(response) {
 			console.log("Mi custom payment error callback");
 			console.log(response.ResultCode + " : " + response.ResultMessage);
-			document.location = "<?php echo "$return_URL_ERROR&Answer="; ?>" + response.AuthorizationKey;
+			editResponse(response,false);
 		}
 
 		function initLoading() {
@@ -193,6 +191,28 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		function stopLoading() {
 			console.log('Stop loading...');
+		}
+
+		function editResponse(response,responseOK){
+
+	    	var redirectOK="<?php echo "$return_URL_OK&Answer="; ?>" + response.AuthorizationKey;
+			var redirectERROR="<?php echo "$return_URL_ERROR&Answer="; ?>" + response.AuthorizationKey;
+			var timeoutOK="&timeout=ok";
+			var timeoutERROR="&timeout=expired&error_message="+response.ResultMessage;
+			var redirection="";
+	
+			if(!response.AuthorizationKey){//si se vence el tiempo del timeout(AuthorizationKey nulo)
+				redirection=redirectERROR+timeoutERROR; 
+			}else{
+				if(responseOK){
+					redirection=redirectOK+timeoutOK;
+				}else{
+					redirection=redirectERROR+timeoutOK;
+				}	
+			}
+
+			document.location=redirection;
+			
 		}
 
 	</script>
@@ -210,3 +230,5 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     </script>
 
 	</html>
+<?php
+get_footer();

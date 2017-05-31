@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.7.0
+    Version: 1.8.0
     Author: Todo Pago
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.7.0');
+define('TODOPAGO_PLUGIN_VERSION','1.8.0');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -46,6 +46,7 @@ function woocommerce_todopago_init(){
         public $tplogger;
 
         public function __construct(){
+	
             $this -> id             = 'todopago';
             $this -> icon           = apply_filters('woocommerce_todopago_icon', "http://www.todopago.com.ar/sites/todopago.com.ar/files/pluginstarjeta.jpg");
             $this -> medthod_title  = 'Todo Pago';
@@ -64,7 +65,6 @@ function woocommerce_todopago_init(){
             $this -> description      = $this -> todopago_getValueOfArray($this -> settings,'description');
             $this -> ambiente         = $this -> todopago_getValueOfArray($this -> settings,'ambiente');
             $this -> tipo_segmento    = $this -> todopago_getValueOfArray($this -> settings,'tipo_segmento');
-            $this -> url_after_redirection  = $this -> todopago_getValueOfArray($this -> settings, 'url_after_redirection');
             
             //$this -> canal_ingreso  = $this -> settings['canal_ingreso'];
             $this -> deadline         = $this -> todopago_getValueOfArray($this -> settings,'deadline');
@@ -93,10 +93,12 @@ function woocommerce_todopago_init(){
             $this -> estado_aprobacion= $this -> todopago_getValueOfArray($this -> settings,'estado_aprobacion');
             $this -> estado_rechazo   = $this -> todopago_getValueOfArray($this -> settings,'estado_rechazo');
             $this -> estado_offline   = $this -> todopago_getValueOfArray($this -> settings,'estado_offline');
-
+			
+            //Timeout 
+            $this -> expiracion_formulario_personalizado= $this -> todopago_getValueOfArray($this -> settings,'expiracion_formulario_personalizado');
+            $this -> timeout_limite = $this -> todopago_getValueOfArray($this -> settings,'timeout_limite');
+            
             $this -> wpnonce_credentials = $this -> todopago_getValueOfArray($this -> settings,'wpnonce');
-
-
 
             $this -> msg['message'] = "";
             $this -> msg['class'] = "";
@@ -109,7 +111,7 @@ function woocommerce_todopago_init(){
             }
 
             //Llamado al first step
-            add_action('after_woocommerce_pay', array($this, 'first_step_todopago'));
+            add_action('before_woocommerce_pay', array($this, 'first_step_todopago'));
 
             //Llamado al second step
             add_action('woocommerce_thankyou', array($this, 'second_step_todopago'));
@@ -159,13 +161,7 @@ function woocommerce_todopago_init(){
                     'options' => array(
                         'test' => 'developers',
                         'prod' => 'produccion')),
-                'url_after_redirection' => array(
-                    'title' => 'Redirección final de transacción (caso de éxito)',
-                    'type' => 'select',
-                    'description' => 'selecciones la pagina de redirección en caso de exito de la transacción',
-                    'options' => array(
-                        'default' => 'default',
-                        'order_received' => 'order received')),
+          
                 'tipo_segmento' => array(
                     'title' => 'Tipo de Segmento',
                     'type' => 'select',
@@ -318,6 +314,21 @@ function woocommerce_todopago_init(){
                     'title' => 'Estado cuando la transacción ha<br>sido offline',
                     'type' => 'select',
                     'options' => wc_get_order_statuses()),
+            		
+            	'expiracion_formulario_personalizado' => array(
+            			'title' => 'Expiracion formulario personalizado',	
+            			'type'  => 'select',
+            			'description' => 'Configurar tiempo de expiración del formulario de pago personalizado',
+            			'options' => array(
+            					'SI' => 'SI',
+            					'NO' => 'NO'
+            			)
+            	),
+            	'timeout_limite' => array(
+            			'title' => 'Tiempo de expiración del formulario de pago',
+            			'type' => 'number',
+            			'id'    => 'timeout_limite',
+            			'description' => 'Tiempo maximo en el que se puede realizar el pago en el formulario en milisegundos. Por defecto si no se envia el valor es de 1800000 (30 minutos)'),
 
                 'wpnonce' => array(
                         'type'  => 'hidden',
@@ -337,6 +348,9 @@ function woocommerce_todopago_init(){
             $urlCredentials = plugins_url('js/credentials.js', __FILE__);            
             echo '<script type="text/javascript" src="' . $urlCredentials . '"></script>';
             
+            $plugin_config = plugins_url('js/plugin_config.js', __FILE__);
+            echo '<script type="text/javascript" src="' . $plugin_config . '"></script>';
+            
             $urlCredentialsPhp = wp_nonce_url(plugins_url('view/credentials.php', __FILE__),"todopago_getcredentials_config_form"); 
             echo '<script type="text/javascript">var BASE_URL_CREDENTIAL = "'.$urlCredentialsPhp.'";</script>';
 
@@ -346,6 +360,7 @@ function woocommerce_todopago_init(){
         //Se ejecuta luego de Finalizar compra -> Realizar el pago
         function first_step_todopago($order_id){
             global $wpdb;
+            
             if(isset($_GET["second_step"])){
                 //Second Step
                 return $this -> second_step_todopago();
@@ -398,20 +413,12 @@ function woocommerce_todopago_init(){
             $controlFraude = ControlFraudeFactory::get_ControlFraude_extractor('Retail', $order, $order->get_user());
             $datosCs = $controlFraude->getDataCF();
 
-            //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
-
-            $home = home_url("/");
+            $home = home_url();
 
             $arrayHome = explode ("/", $home); 
             $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
 
-            if($this->url_after_redirection == "order_received"){
-                        $return_URL_OK = $order->get_checkout_order_received_url();
-                    }else{
-                     $return_URL_OK = $order->get_checkout_order_received_url();
-//                     $return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
-
-                    }
+            $return_URL_OK = $order->get_checkout_order_received_url();
 
             $esProductivo = $this->ambiente == "prod";
             $optionsSAR_comercio = $this->getOptionsSARComercio($esProductivo, $return_URL_OK,$return_URL_ERROR);
@@ -429,7 +436,7 @@ function woocommerce_todopago_init(){
         }
 
         function call_sar($paramsSAR, $logger){
-            
+ 
             $logger->debug("call_sar");
             $esProductivo = $this->ambiente == "prod";
             $http_header = $this->getHttpHeader();
@@ -450,11 +457,13 @@ function woocommerce_todopago_init(){
 
         function custom_commerce($wpdb, $order, $paramsSAR, $response_sar){
             
-            $this->_persistResponse_SAR($order->id, $response_sar);
+        	$id=$this->method_exists_orderkey_id($order,"get_id");
+        	
+            $this->_persistResponse_SAR($id, $response_sar, $paramsSAR);
 
             $wpdb->insert(
                 $wpdb->prefix.'todopago_transaccion', 
-                array('id_orden'=>$order->id,
+                array('id_orden'=>$id,
                       'params_SAR'=>json_encode($paramsSAR),
                       'first_step'=>date("Y-m-d H:i:s"),
                       'response_SAR'=>json_encode($response_sar),
@@ -465,42 +474,7 @@ function woocommerce_todopago_init(){
             );
 
 
-            if($response_sar["StatusCode"] == -1){
-                if ($this->tipo_formulario == TP_FORM_EXTERNO) {
-                    echo '<p> Gracias por su órden, click en el botón de abajo para pagar con TodoPago </p>';
-                    echo $this->generate_form($order, $response_sar["URL_Request"]);
-                }
-                else {
-                    $basename = plugin_basename(dirname(__FILE__));
-                    $baseurl = plugins_url();
-                    $form_dir = "$baseurl/$basename/view/formulario-hibrido";
-                    $firstname = $paramsSAR['operacion']['CSSTFIRSTNAME'];
-                    $lastname = $paramsSAR['operacion']['CSSTLASTNAME'];
-                    $email = $paramsSAR['operacion']['CSSTEMAIL'];
-                    $merchant = $paramsSAR['operacion']['MERCHANT'];
-                    $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
-
-
-	            //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
-                    
-                    $home = home_url("/");
-
-                    $arrayHome = explode ("/", $home); 
-	            $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
-
-                    if($this->url_after_redirection == "order_received"){
-                        $return_URL_OK = $order->get_checkout_order_received_url();
-                    }else{
-                        $return_URL_OK = $order->get_checkout_order_received_url();
-                        //$return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
-                        
-                    }
-
-                    $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_FORMS_TEST);
-
-                    require 'view/formulario-hibrido/formulario.php';
-                }
-            }else{
+            if($response_sar["StatusCode"] != -1){
                 $this->_printErrorMsg();
             }
         }
@@ -517,10 +491,34 @@ function woocommerce_todopago_init(){
 
                 $order = new WC_Order($order_id);
 
+if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
++        		
++        			$this -> setOrderStatus($order,'estado_rechazo');
++        			//$this -> _printErrorMsg();
++        			$redirect_url = add_query_arg( 'wc_error', urlencode($_GET['error_message']), $order->get_cancel_order_url() );
++        			wp_redirect($redirect_url);
++        			return;
++        		
++        		}
+
                 if($order->payment_method == 'todopago'){
                     global $woocommerce;
                     $logger = $this->_obtain_logger(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION, $this->ambiente, $order->customer_user, $order_id, true);
                     $data_GAA = $this->call_GAA($order_id, $logger);
+
+		    ////////////////////////////////////////////////////////////////////
+		    $key=$_GET['key'];
+		    $post_id=get_post_id_by_key($key);
+
+		    $costo_subtotal=$order->get_total();
+		    $costo_total=$data_GAA["response_GAA"]["Payload"]["Request"]["AMOUNTBUYER"];
+		    $otros_cargos=$costo_total-$costo_subtotal;
+
+
+		    update_post_meta($post_id,"_order_total",$costo_total);
+		    add_post_meta($post_id,"_otros_cargos",$otros_cargos);
+		    ///////////////////////////////////////////////////////////////////
+
                     return $this->take_action($order, $data_GAA, $logger);
                 }
             }
@@ -528,37 +526,47 @@ function woocommerce_todopago_init(){
         }
 
         function call_GAA($order_id, $logger){
-            $logger->info('second step _ ORDER ID: '.$order_id);
-            $row = get_post_meta($order_id, 'response_SAR', true);
-            $esProductivo = $this->ambiente == "prod";
-            $response_SAR = unserialize($row); 
-
-            $params_GAA = array (     
-                'Security'   => $esProductivo ? $this -> security_prod : $this -> security_test,      
-                'Merchant'   => strval($esProductivo ? $this -> merchant_id_prod : $this -> merchant_id_test),     
-                'RequestKey' => $response_SAR["RequestKey"],     
-                'AnswerKey'  => $_GET['Answer']
-            );
-            $logger->info('params GAA '.json_encode($params_GAA));
-
-            $esProductivo = $this->ambiente == "prod"; 
-            $http_header = $this->getHttpHeader();
-            $logger->info("HTTP_HEADER: ".json_encode($http_header));
-            $connector = new \TodoPago\Sdk($http_header, $this -> ambiente);
-            
- //           $logger->info("PARAMETROS GAA: ".json_encode($params_GAA));
-            $response_GAA = $connector->getAuthorizeAnswer($params_GAA);
-            $logger->info('response GAA '.json_encode($response_GAA));
-
-            $data_GAA['params_GAA'] = $params_GAA;
-            $data_GAA['response_GAA'] = $response_GAA;
-
-            return $data_GAA;    
+        	global $data_GAA;
+        	
+        	$row = get_post_meta($order_id, 'response_SAR', true);
+        	$esProductivo = $this->ambiente == "prod";
+        	$response_SAR = unserialize($row);
+        
+        	$params_GAA = array (
+        			'Security'   => $esProductivo ? $this -> security_prod : $this -> security_test,
+        			'Merchant'   => strval($esProductivo ? $this -> merchant_id_prod : $this -> merchant_id_test),
+        			'RequestKey' => $response_SAR["RequestKey"],
+        			'AnswerKey'  => $_GET['Answer']
+        	);
+        		
+        
+        	$esProductivo = $this->ambiente == "prod";
+        	$http_header = $this->getHttpHeader();
+        	
+        	
+        	$connector = new \TodoPago\Sdk($http_header, $this -> ambiente);
+        
+        	
+        	$response_GAA = $connector->getAuthorizeAnswer($params_GAA);
+        	
+        
+        	$data_GAA['params_GAA'] = $params_GAA;
+        	$data_GAA['response_GAA'] = $response_GAA;
+        	
+        	if($logger!=null){
+        		
+        		$logger->info('second step _ ORDER ID: '.$order_id);
+        		$logger->info('params GAA '.json_encode($params_GAA));
+        		$logger->info("HTTP_HEADER: ".json_encode($http_header));
+        		$logger->info('response GAA '.json_encode($response_GAA));
+        	}
+        
+        	return $data_GAA;
         }
 
         function take_action($order, $data_GAA, $logger){
             global $wpdb;
-
+	    $id = $this->method_exists_orderkey_id($order,"get_id");
             $wpdb->update( 
                 $wpdb->prefix.'todopago_transaccion',
                 array(
@@ -567,7 +575,7 @@ function woocommerce_todopago_init(){
                     'response_GAA'=>json_encode($data_GAA['response_GAA']), // string
                     'answer_key'=>$_GET['Answer'] //string
                 ),
-                array('id_orden'=>$order->id), // int
+                array('id_orden'=>$id), // int
                 array(
                     '%s',
                     '%s',
@@ -588,11 +596,9 @@ function woocommerce_todopago_init(){
                 //Vaciar carrito
                 global $woocommerce;
                 $woocommerce->cart->empty_cart();
-
-                if($this->url_after_redirection != "order_received"){
-                    echo "<h2>Operación " . $order->id . " exitosa</h2>";
-                    echo "<script>jQuery('.entry-title').html('Compra finalizada');</script>";
-                } 
+		$id = $this->method_exists_orderkey_id($order,"get_id");
+                echo "<h2>Operación " . $id . " exitosa</h2>";
+                echo "<script>jQuery('.entry-title').html('Compra finalizada');</script>";
             }else{
                 $this -> setOrderStatus($order,'estado_rechazo');
                 //$this -> _printErrorMsg();
@@ -602,8 +608,12 @@ function woocommerce_todopago_init(){
 
         }
 
-        function _printErrorMsg(){
+        function _printErrorMsg($msg = null){
+		if($msg != null) {
+            echo '<div class="woocommerce-error">Lo sentimos, ha ocurrido un error. '.$msg.' <a href="' . home_url() . '" class="wc-backward">Volver a la página de inicio</a></div>';
+		} else {
             echo '<div class="woocommerce-error">Lo sentimos, ha ocurrido un error. <a href="' . home_url() . '" class="wc-backward">Volver a la página de inicio</a></div>';
+		}
         }
 
         private function setOrderStatus($order, $statusName){
@@ -625,7 +635,7 @@ function woocommerce_todopago_init(){
             return json_decode(html_entity_decode($wsdl,TRUE),TRUE);
         }
 
-        private function getHttpHeader(){
+        public function getHttpHeader(){
             $esProductivo = $this->ambiente == "prod";
             $http_header = $esProductivo ? $this -> http_header_prod : $this -> http_header_test;
             $header_decoded = json_decode(html_entity_decode($http_header,TRUE));
@@ -660,6 +670,10 @@ function woocommerce_todopago_init(){
             
             if($this -> enabledCuotas === "yes"){
                 $arrayResult['MAXINSTALLMENTS']  = strval( $this -> max_cuotas);
+            }
+            
+            if($this->expiracion_formulario_personalizado=='SI'){
+            	$arrayResult["TIMEOUT"]=$this->timeout_limite;
             }
             
             return $arrayResult;
@@ -755,22 +769,73 @@ function woocommerce_todopago_init(){
 
             if(isset($_GET["pay_for_order"])  && $_GET["pay_for_order"] == true) {
 
-                $result = array (     
-                    'result' => 'success', 
-                    'redirect' => get_site_url().'/?TodoPago_redirect=true&form=ext&order='.$order_id
-                );
-                
+        $row = get_post_meta($order_id, 'response_SAR', true);
+        $response_SAR = unserialize($row);
+        $row = get_post_meta($order_id, 'params_SAR', true);
+        $paramsSAR = unserialize($row);
+
+		if ($this->tipo_formulario == TP_FORM_EXTERNO) {
+			wp_redirect($response_SAR["URL_Request"]);
+			exit;
+                }
+                else {
+                    $basename = plugin_basename(dirname(__FILE__));
+                    $baseurl = plugins_url();
+                    $form_dir = "$baseurl/$basename/view/formulario-hibrido";
+                    $firstname = $paramsSAR['operacion']['CSSTFIRSTNAME'];
+                    $lastname = $paramsSAR['operacion']['CSSTLASTNAME'];
+                    $email = $paramsSAR['operacion']['CSSTEMAIL'];
+                    $merchant = $paramsSAR['operacion']['MERCHANT'];
+                    $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
+                    $home = home_url("/");
+                    $arrayHome = explode ("/", $home);
+	            $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
+                    $return_URL_OK = $order->get_checkout_order_received_url();
+                    $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_FORMS_TEST);
+                    require 'view/formulario-hibrido/formulario.php';
+		    exit;
+                }
+
+
             } else {
-                $result = array (     
-                     'result' => 'success', 
-                     'redirect' => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-                );
-
-            }
-
-   
+            	
+            	$key=$this->method_exists_orderkey_id($order,"get_order_key");
+            	
+			$result = array(
+				'result'   => 'success',
+				'redirect' => add_query_arg('order', $order_id, add_query_arg('key', $key, $order->get_checkout_payment_url()))
+            );
+	    }
             return $result;
         }
+        
+        public function method_exists_orderkey_id($order_object,$method_name){
+        	
+        	$gok="get_order_key";
+        	$gi="get_id";
+        	$result="";
+        	
+        	if($method_name==$gok){
+        		
+        		if(method_exists($order_object,$gok)) {
+        			$result = $order_object->get_order_key();
+        		} else {
+        			$result = $order_object->order_key;
+        		}
+        		
+        	}else{
+        		
+        		if(method_exists($order_object,$gi)) {
+        			$result = $order_object->get_id();
+        		} else {
+        			$result = $order_object->id;
+        		}
+        	}
+        	
+        	return $result;
+        	
+        }
+        
     }//End WC_TodoPago_Gateway
 
     class_alias("WC_TodoPago_Gateway","todopago");
@@ -965,24 +1030,28 @@ function getStatus(){
       
         foreach ($status['Operations'] as $key => $value) {   
             if(is_array($value) && $key == $auxColection){
-                $rta .= "$key: \n";
+                $rta .= "$key: <br/>";
                 foreach ($auxArray[$aux] as $key2 => $value2) {              
-                    $rta .= $aux." \n";                
+                    $rta .= $aux." <br/>";                
                     if(is_array($value2)){                    
                         foreach ($value2 as $key3 => $value3) {
                             if(is_array($value3)){                    
                                  foreach ($value3 as $key4 => $value4) {
-                                    $rta .= "   - $key4: $value4 \n";
+                                    $rta .= "   - $key4: $value4 <br/>";
                                 }
-                            }                     
+                            } else {
+				$rta .= "   - $key3: $value3 <br/>";
+			    }
                         }
-                    }
-                }            
-            }else{             
+                    } else {
+			$rta .= "$key2: $value2 <br/>";
+		    }
+                }
+            }else{
                 if(is_array($value)){
-                    $rta .= "$key: \n";
+                    $rta .= "$key: <br/>";
                 }else{
-                    $rta .= "$key: $value \n";
+                    $rta .= "$key: $value <br/>";
                 }
             }
         }
@@ -993,4 +1062,79 @@ function getStatus(){
     echo($rta);
 
     exit;
+}
+
+
+function modifyOrder($total_rows){
+	
+	global $wpdb;
+	
+	$tp_gateway=new WC_TodoPago_Gateway();
+
+	if(!isset($_GET["order-received"])) return $total_rows;
+
+	$order_id=$_GET["order-received"];
+	
+
+	$key=$_GET["key"];
+	
+	$params_GAA=$tp_gateway->call_GAA($order_id,null);
+	
+	$payload_request=$params_GAA["response_GAA"]["Payload"]["Request"];
+	
+	
+	$order = $wpdb->get_row("select * from wp_todopago_transaccion where id_orden=".$order_id.";");
+	
+	$decoded_order=json_decode($order->params_SAR);
+	
+	$costo_subtotal=$decoded_order->operacion->AMOUNT;
+	
+	$costo_total=$payload_request["AMOUNTBUYER"];
+	
+	$otros_cargos=$costo_total - $costo_subtotal;
+	
+	
+	$order_total_array=$total_rows["order_total"];
+	
+	$order_total_array["value"]=price_amount_tag($costo_total);
+	
+	
+	array_pop($total_rows);
+	
+	array_push($total_rows,array("label"=>"Otros cargos","value"=>price_amount_tag($otros_cargos)));
+	
+	array_push($total_rows, $order_total_array);
+	
+	
+	return $total_rows;
+}
+
+add_action('woocommerce_get_order_item_totals', 'modifyOrder' );
+
+function price_amount_tag($value){
+	return '<span class="woocommerce-Price-amount amount">'.$value.'<span class="woocommerce-Price-currencySymbol">&#36;</span></span>';
+}
+
+function get_post_id_by_key($key){
+	
+	global $wpdb;
+	
+	$data = $wpdb->get_row("SELECT post_id FROM wp_postmeta WHERE meta_value = '".$key."'" );
+	
+	return $data->post_id;
+}
+
+add_action('woocommerce_admin_order_totals_after_shipping', 'agregarOtrosCargos');
+
+function agregarOtrosCargos($order_id) {
+	
+	$post_id=$_GET["post"];
+	
+	$otros_cargos = get_post_meta($post_id,"_otros_cargos",true);
+	
+	echo '<tr>
+            <td class="label">Otros cargos:</td>
+            <td width="1%"></td>
+            <td class="total woocommerce-Price-amount amount">'.$otros_cargos.'$</td>
+        </tr>';
 }

@@ -10,22 +10,33 @@ class ControlFraude_Retail extends ControlFraude{
         $payDataOperacion = array();
         $payDataOperacion['CSSTCITY'] = $this->getField($this->order->shipping_city);
         $payDataOperacion['CSSTCOUNTRY'] = $this->getField($this->order->shipping_country);
+        $payDataOperacion['CSSTPHONENUMBER'] = $this->getField(phone::clean($this->order->billing_phone));
+        $payDataOperacion['CSSTPOSTALCODE'] = $this->getField($this->order->shipping_postcode);
         $payDataOperacion['CSSTEMAIL'] = $this->getField($this->order->billing_email); //Woo con contempla mail de envío
-        
         $payDataOperacion['CSSTFIRSTNAME'] = $this->getField($this->order->shipping_first_name);
+        $payDataOperacion['CSSTLASTNAME'] = $this->getField($this->order->shipping_last_name);
+        $payDataOperacion['CSSTSTATE'] = $this->_getStateCode($this->order->shipping_state);
+        $payDataOperacion['CSSTSTREET1'] =$this->getField($this->order->billing_address_1);
+        
+        
+        if(empty($payDataOperacion['CSSTCITY'])){
+        	$payDataOperacion['CSSTCITY'] = $this->getField($this->order->billing_city);
+        }
+        if(empty($payDataOperacion['CSSTCOUNTRY'])){
+        	$payDataOperacion['CSSTCOUNTRY'] = $this->getField($this->order->billing_country);
+        }
+        if(empty($payDataOperacion['CSSTPOSTALCODE'])){
+        	$payDataOperacion['CSSTPOSTALCODE'] = $this->getField($this->order->billing_postcode);
+        }
         if(empty($payDataOperacion['CSSTFIRSTNAME'])){           
             $payDataOperacion['CSSTFIRSTNAME'] = $this->getField($this->order->billing_first_name);
         }
-        
-        $payDataOperacion['CSSTLASTNAME'] = $this->getField($this->order->shipping_last_name);
         if(empty($payDataOperacion['CSSTLASTNAME'])){           
             $payDataOperacion['CSSTLASTNAME'] = $this->getField($this->order->billing_last_name);
         }
-
-        $payDataOperacion['CSSTPHONENUMBER'] = $this->getField(phone::clean($this->order->shipping_phone));
-        $payDataOperacion['CSSTPOSTALCODE'] = $this->getField($this->order->shipping_postcode);
-        $payDataOperacion['CSSTSTATE'] = $this->_getStateCode($this->order->shipping_state);
-        $payDataOperacion['CSSTSTREET1'] =$this->getField($this->order->billing_address_1);
+        if(empty($payDataOperacion['CSSTSTATE'])){
+        	$payDataOperacion['CSSTSTATE'] = $this->_getStateCode($this->order->billing_state);
+        }
 
         //$payDataOperacion['CSMDD12'] = Mage::getStoreConfig('payment/modulodepago2/cs_deadline');
         //$payDataOperacion['CSMDD13'] = $this->getField($this->order->getShippingDescription());

@@ -45,14 +45,14 @@ Descomentar: <em>extension=php_openssl.dll</em> del php.ini
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="configuracion"></a>
-##Configuración
+## Configuración
 
 <a name="activacion"></a>
-####Activación
+#### Activación
 La activación se realiza como cualquier plugin de Wordpress: Desde Plugins -> Plugins instalados -> activar el plugin de nombre <strong>TodoPago para WooCommerce</strong>.<br />
 
 <a name="confplugin"></a>
-####Configuración plug in
+#### Configuración plug in
 Para llegar al menu de configuración del plugin ir a: <em>WooCommerce -> Ajustes</em> y seleccionar Finalizar Compra de la solapa de configuraciones que aparece en la parte superior. Entre los medios de pago aparecerá la opción de nombre <strong>Todopago</strong>.<br />
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/1-%20header%20gateway.png)</br>
 
@@ -66,7 +66,14 @@ Para llegar al menu de configuración del plugin ir a: <em>WooCommerce -> Ajuste
 - Estado de transacción iniciada: Se setea luego de completar los datos de facturación y presionar el botón "Realizar el pedido".
 - Estado de transacción aprobada: Se setea luego de volver del formulario de pago de Todo Pago y se obtiene una confirmación del pago.
 - Estado de transacción rechazada: Se setea luego de volver del formulario de pago de Todo Pago y se obtiene un rechazo del pago.
+
+-Para versiones de Woocommerce anteriores a 3.x , la opción "Estado cuando la transacción ha sido iniciada" debe de estar seteada en "Pendiente de pago".
 </br>
+
+ 
+
+***Configuariones timeout***
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/16-opciones_timeout.png)</br>
 
 ***Redirección final de transacción (a partir de v 1.4.2)***
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/woocommerce_1.4.2.png)</br>
@@ -74,7 +81,7 @@ Para llegar al menu de configuración del plugin ir a: <em>WooCommerce -> Ajuste
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="formHibrido"></a>
-####Formulario Hibrido
+#### Formulario Hibrido
 En la configuracion del plugin tambien estara la posibilidad de mostrarle al cliente el formulario de pago de TodoPago integrada en el sitio. 
 Para esto , en la configuracion se debe seleccionar la opcion Integrado en el campo de seleccion de fromulario
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/10-%20formulario%20hibrido.png)</br>
@@ -87,7 +94,7 @@ Para esto , en la configuracion se debe seleccionar la opcion Integrado en el ca
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="getcredentials"></a>
-####Obtener datos de configuracion
+#### Obtener datos de configuracion
 Se puede obtener los datos de configuracion del plugin con solo loguearte con tus credenciales de Todopago. </br>
 a. Ir a la opcion Obtener credenciales</br>
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/9-credenciales.png) </br>
@@ -97,7 +104,7 @@ c. Los datos se cargaran automaticamente en los campos Merchant ID y Security co
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="maxcuotas"></a>
-####Configuración de Maximo de Cuotas
+#### Configuración de Maximo de Cuotas
 Se puede configurar la cantidad máxima de cuotas que ofrecerá el formulario de TodoPago con el campo cantidad máxima de cuotas. Para que se tenga en cuenta este valor se debe habilitar el campo Habilitar máximo de cuotas y tomará el valor fijado para máximo de cuotas. En caso que esté habilitado el campo y no haya un valor puesto para las cuotas se tomará el valor 12 por defecto.
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/13-%20cuotas.png)</br>
 <br />
@@ -130,7 +137,7 @@ El plugin, toma valores est&aacute;ndar del framework para validar los datos del
 -- IP de la pc del comprador: $order -> customer_ip_address;
 ```
 <a name="cons_retail"></a> 
-####Consideraciones para vertical RETAIL
+#### Consideraciones para vertical RETAIL
 Las consideración para el caso de empresas del rubro <strong>RETAIL</strong> son similares a las <em>consideraciones generales</em> ya que se obtienen del mismo objeto de clase WC_Orden
 ```php
 -- Ciudad de envío de la orden: $order -> shipping_city;
@@ -145,7 +152,7 @@ Las consideración para el caso de empresas del rubro <strong>RETAIL</strong> so
 ```
  
 <a name="prevfraudedatosadicionales" ></a>
-####Nuevos Atributos en los productos
+#### Nuevos Atributos en los productos
 Para efectivizar la prevenci&oacute;n de fraude se han creado nuevos atributos de producto dentro de la categoria <em>"Prevenci&oacute;n de Fraude"</em>.</br> 
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/12-%20prevencion%20fraude.PNG)<br/>
 <sub></sub><br />
@@ -178,8 +185,8 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
 
 <a name="tablas"></a>
 ## Tablas de Referencia
-######[Provincias](#p)
-######[Tabla de errores](#codigoerrores)
+###### [Provincias](#p)
+###### [Tabla de errores](#codigoerrores)
 
 <a name="p"></a>
 <p>Provincias</p>
@@ -268,7 +275,7 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
 </table>
 
 <a name="availableversions"></a>
-## Versiones Disponibles##
+## Versiones Disponibles ##
 <table>
   <thead>
     <tr>
