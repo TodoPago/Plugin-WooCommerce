@@ -95,12 +95,13 @@ get_header();
 						<input id="anioTxt" class="left input-text form-field">
 						<div class="clear"></div>
 					</div>
-					<div class="form-row form-row-last tp-no-cupon" data-validate_classes="validate-required">
-						<label id="labelCodSegTextId" for="codigoSeguridadTxt">C&oacute;d. de seguridad <abbr class="required" title="obligatorio">*</abbr></label>
-						<input id="codigoSeguridadTxt" class="left input-text form-field" />
-						<div class="clear"></div>
-					</div>
-				</div>
+					
+                                        <div class="form-row form-row-first dateFields tp-no-cupon" data-validate_classes="validate-required">
+                                                <label id="labelCodSegTextIdy" for="labelCodSegTextId">Ultimos 3 numeros del dorso. <abbr class="required" title="obligatorio">*</abbr></label>
+						<input id="codigoSeguridadTxt" class="left input-text form-field">
+						<span id="labelCodSegTextId" class="left tp-label" style="visibility: hidden;"></span>
+                                                <div class="clear"></div>
+                                        </div>
 				<div class="col-2" data-validate_classes="validate-required">
 					<div class="form-row">
 						<label for="apynTxt">Nombre y Apellido <abbr class="required" title="obligatorio">*</abbr></label>
@@ -200,19 +201,18 @@ get_header();
 			var timeoutOK="&timeout=ok";
 			var timeoutERROR="&timeout=expired&error_message="+response.ResultMessage;
 			var redirection="";
-	
+
 			if(!response.AuthorizationKey){//si se vence el tiempo del timeout(AuthorizationKey nulo)
-				redirection=redirectERROR+timeoutERROR; 
+				redirection=redirectERROR+timeoutERROR;
 			}else{
 				if(responseOK){
 					redirection=redirectOK+timeoutOK;
 				}else{
 					redirection=redirectERROR+timeoutOK;
-				}	
+				}
 			}
 
-			document.location=redirection;
-			
+			window.location.href = redirection;
 		}
 
 	</script>

@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.8.1
+    Version: 1.9.0
     Author: Todo Pago
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.8.1');
+define('TODOPAGO_PLUGIN_VERSION','1.9.0');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -61,9 +61,10 @@ function woocommerce_todopago_init(){
 
             //Datos generales
             $this -> version          = $this -> todopago_getValueOfArray($this -> settings,'version');
-            $this -> title            = $this -> todopago_getValueOfArray($this -> settings,'title');
+            $this -> title            = "Todo Pago";
             $this -> description      = $this -> todopago_getValueOfArray($this -> settings,'description');
             $this -> ambiente         = $this -> todopago_getValueOfArray($this -> settings,'ambiente');
+            $this -> clean_carrito    = $this -> todopago_getValueOfArray($this -> settings,'clean_carrito');
             $this -> tipo_segmento    = $this -> todopago_getValueOfArray($this -> settings,'tipo_segmento');
             
             //$this -> canal_ingreso  = $this -> settings['canal_ingreso'];
@@ -121,17 +122,15 @@ function woocommerce_todopago_init(){
         }//End __construct
 
         function todopago_getValueOfArray($array , $key) {     
-              
             if(array_key_exists($key, $array)){  
 		return $array[$key];
             }  else {
                 return FALSE;
             }
-                       
         }
-        
+
         function init_form_fields(){
-     
+
             global $woocommerce;
             require_once $woocommerce -> plugin_path() . '/includes/wc-order-functions.php';
 
@@ -144,11 +143,6 @@ function woocommerce_todopago_init(){
                     'type' => 'checkbox',
                     'label' => 'Habilitar modulo de pago TodoPago',
                     'default' => 'no'),
-                'title' => array(
-                    'title' => 'Título',
-                    'type'=> 'text',
-                    'description' => 'Título que el usuario ve durante el checkout',
-                    'default' => 'TodoPago'),
                 'description' => array(
                     'title' => 'Descripción',
                     'type' => 'textarea',
@@ -161,7 +155,13 @@ function woocommerce_todopago_init(){
                     'options' => array(
                         'test' => 'developers',
                         'prod' => 'produccion')),
-          
+            	'clean_carrito' => array(
+            		'title' => 'Vaciar carrito',
+            		'type' => 'select',
+            		'description' => 'Vaciar carrito en caso de fallo',
+            		    'options' => array(
+            				'si' => 'si',
+            				'no' => 'no')),
                 'tipo_segmento' => array(
                     'title' => 'Tipo de Segmento',
                     'type' => 'select',
@@ -415,7 +415,7 @@ function woocommerce_todopago_init(){
 
             $home = home_url();
 
-            $arrayHome = explode ("/", $home); 
+            $arrayHome = explode ("/", $home);
             $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
 
             $return_URL_OK = $order->get_checkout_order_received_url();
@@ -475,7 +475,13 @@ function woocommerce_todopago_init(){
 
 
             if($response_sar["StatusCode"] != -1){
-                $this->_printErrorMsg();
+                //$this->_printErrorMsg();
+                
+            	$redirect_url = add_query_arg( 'wc_error', urlencode($response_sar["StatusMessage"]), $order->get_cancel_order_url() );
+            	global $woocommerce;
+            	$this->clean_cart($woocommerce, $this->clean_carrito);
+            	wp_redirect($redirect_url);
+            	
             }
         }
 
@@ -484,7 +490,7 @@ function woocommerce_todopago_init(){
 
             if(isset($_GET['order']) || isset($_GET['key'])){
                 $order_id = intval($_GET['order']);
-               
+ 
                 if(!isset($_GET['order'])) {
                     $order_id = wc_get_order_id_by_order_key($_GET['key']);
                 }
@@ -496,9 +502,12 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
         			$this -> setOrderStatus($order,'estado_rechazo');
         			//$this -> _printErrorMsg();
         			$redirect_url = add_query_arg( 'wc_error', urlencode($_GET['error_message']), $order->get_cancel_order_url() );
+        			
+        			global $woocommerce;
+        			$this->clean_cart($woocommerce, $this->clean_carrito);
+        			
         			wp_redirect($redirect_url);
         			return;
-        		
         		}
 
                 if($order->payment_method == 'todopago'){
@@ -560,6 +569,12 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
         		$logger->info("HTTP_HEADER: ".json_encode($http_header));
         		$logger->info('response GAA '.json_encode($response_GAA));
         	}
+        	
+        	global $woocommerce;
+        	
+        	if($response_GAA['StatusCode']!=-1){
+        		$this->clean_cart($woocommerce,$this->clean_carrito);
+        	}
         
         	return $data_GAA;
         }
@@ -567,7 +582,7 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
         function take_action($order, $data_GAA, $logger){
             global $wpdb;
 	    $id = $this->method_exists_orderkey_id($order,"get_id");
-            $wpdb->update( 
+            $wpdb->update(
                 $wpdb->prefix.'todopago_transaccion',
                 array(
                     'second_step'=>date("Y-m-d H:i:s"), // string
@@ -585,7 +600,7 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
                 array('%d')
             );
 
-            if ($data_GAA['response_GAA']['StatusCode']== -1){
+            if ($data_GAA['response_GAA']['StatusCode'] == -1){
 
                 $this -> setOrderStatus($order,'estado_aprobacion');
                 $logger->info('estado de orden '.$order->post_status);
@@ -599,11 +614,14 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
 		$id = $this->method_exists_orderkey_id($order,"get_id");
                 echo "<h2>Operación " . $id . " exitosa</h2>";
                 echo "<script>jQuery('.entry-title').html('Compra finalizada');</script>";
+		return;
             }else{
+                global $woocommerce;
+ 		$this->clean_cart($woocommerce, $this->clean_carrito);
+
                 $this -> setOrderStatus($order,'estado_rechazo');
-                //$this -> _printErrorMsg();
-		        $redirect_url = add_query_arg( 'wc_error', urlencode("Su pago no ha sido procesado. Mensaje de TodoPago:" . $data_GAA['response_GAA']['StatusMessage']), $order->get_cancel_order_url() );
-		         wp_redirect($redirect_url);
+		$redirect_url = add_query_arg( 'wc_error', urlencode("Su pago no ha sido procesado. Mensaje de TodoPago:" . $data_GAA['response_GAA']['StatusMessage']), $order->get_cancel_order_url() );
+		wp_redirect($redirect_url);
             }
 
         }
@@ -686,6 +704,29 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
               <a class="button cancel" href="' . $order->get_cancel_order_url() . '">' . ' Cancelar orden ' . '</a>';
         }
 
+        private function clean_cart($woocommerce,$condition){
+        	if($condition=="si"){
+        		$woocommerce->cart->empty_cart();
+        	} else {
+        		$woocommerce->cart->empty_cart();
+
+		            if(isset($_GET['order']) || isset($_GET['key'])){
+                		$order_id = intval($_GET['order']);
+		                if(!isset($_GET['order'])) {
+                	            $order_id = wc_get_order_id_by_order_key($_GET['key']);
+		                }
+                            }
+                	    $order = new WC_Order($order_id);
+			    $items =  $order->get_items();
+
+                            foreach($items as $key => $value) {
+                                if(is_array($value)) {
+                                    $woocommerce->cart->add_to_cart($value['product_id'],$value['qty']);
+                                }
+                            }
+		}
+    	}
+        
         public function process_refund( $order_id, $amount = null, $reason = '' ) {
             global $woocommerce;
             //IMPORTANTE EXCEPTIONS: WooCommerce las capturará y las mostrará en un alert, esta es la herramienta que se dipone para comunicarse con el usuario, he probado con echo y no lo he logrado.
@@ -721,9 +762,9 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
 
             if(empty($amount)) { //Si el amount vieniera vacío hace la devolución total
                 $logger->info("Pedido de devolución total pesos de la orden $order_id");
-                $logger->debug("Params devolución: ".json_encode($options_return));
+                $logger->info("Params devolución: ".json_encode($options_return));
 
-                //Intento realizar la devolución
+                //Intento realizar la devolución total
                 try {
                     $return_response = $connector->voidRequest($options_return);
                 }
@@ -733,20 +774,25 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
                 }
             }
             else {
-                $logger->info("Pedido de devolución por $amount pesos de la orden $order_id");
-                $options_return['AMOUNT'] = $amount;
-                $logger->debug("Params devolución: ".json_encode($options_return));
+//            	if($amount < $options_return['AMOUNT']){
 
-                //Intento realizar la devolución
-                try {
-                    $return_response = $connector->returnRequest($options_return);
-                }
-                catch (Exception $e) {
-                    $logger->error("Falló al consultar el servicio: ", $e);
-                    throw new Exception("Falló al consultar el servicio");
-                }
+                	$logger->info("Pedido de devolución por $amount pesos de la orden $order_id");
+                	$options_return['AMOUNT'] = $amount;
+                	$logger->info("Params devolución: ".json_encode($options_return));
+
+                	//Intento realizar la devolución parcial
+                	try {
+                		$return_response = $connector->returnRequest($options_return);
+                	}
+                	catch (Exception $e) {
+                		$logger->error("Falló al consultar el servicio: ", $e);
+                		throw new Exception("Falló al consultar el servicio");
+                	}
+//                }else{
+//                	throw new Exception("Debe Ingresar un monto menor o igual al total de la compra sin interes");
+//                }
             }
-            $logger->debug("return Response: ".json_encode($return_response));
+            $logger->info("Response devolucion: ".json_encode($return_response));
 
             //Si el servicio no responde según lo esperado, se interrumpe la devolución
             if (!is_array($return_response) || !array_key_exists('StatusCode', $return_response) || !array_key_exists('StatusMessage', $return_response)) {
@@ -789,7 +835,8 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
                     $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
                     $home = home_url("/");
                     $arrayHome = explode ("/", $home);
-	            $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
+	            	//$return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
+                    $return_URL_ERROR = $order->get_checkout_order_received_url()."&".http_build_query(array_merge($_GET, array('sessionid'=> $order_id, 'second_step' => 'true','cart'=>1)));
                     $return_URL_OK = $order->get_checkout_order_received_url();
                     $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_FORMS_TEST);
                     require 'view/formulario-hibrido/formulario.php';
