@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.9.0
+    Version: 1.9.1
     Author: Todo Pago
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.9.0');
+define('TODOPAGO_PLUGIN_VERSION','1.9.1');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -474,14 +474,46 @@ function woocommerce_todopago_init(){
             );
 
 
-            if($response_sar["StatusCode"] != -1){
-                //$this->_printErrorMsg();
-                
-            	$redirect_url = add_query_arg( 'wc_error', urlencode($response_sar["StatusMessage"]), $order->get_cancel_order_url() );
-            	global $woocommerce;
-            	$this->clean_cart($woocommerce, $this->clean_carrito);
-            	wp_redirect($redirect_url);
-            	
+            if($response_sar["StatusCode"] == -1){
+                if ($this->tipo_formulario == TP_FORM_EXTERNO) {
+			echo '<script>window.location.href = "'.get_site_url().'/?TodoPago_redirect=true&form=ext&order='.$id.'"</script>';
+/*
+                    echo '<p> Gracias por su órden, click en el botón de abajo para pagar con TodoPago </p>';
+                    echo $this->generate_form($order, $response_sar["URL_Request"]);
+*/
+                }
+                else {
+                    $basename = plugin_basename(dirname(__FILE__));
+                    $baseurl = plugins_url();
+                    $form_dir = "$baseurl/$basename/view/formulario-hibrido";
+                    $firstname = $paramsSAR['operacion']['CSSTFIRSTNAME'];
+                    $lastname = $paramsSAR['operacion']['CSSTLASTNAME'];
+                    $email = $paramsSAR['operacion']['CSSTEMAIL'];
+                    $merchant = $paramsSAR['operacion']['MERCHANT'];
+                    $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
+
+
+	            //$returnURL = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';
+                    
+                    $home = home_url("/");
+
+                    $arrayHome = explode ("/", $home); 
+	            $return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
+
+                    if($this->url_after_redirection == "order_received"){
+                        $return_URL_OK = $order->get_checkout_order_received_url();
+                    }else{
+                        $return_URL_OK = $order->get_checkout_order_received_url();
+                        //$return_URL_OK = $arrayHome[0].'//'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}".'&second_step=true';  
+                        
+                    }
+
+                    $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_FORMS_TEST);
+
+                    require 'view/formulario-hibrido/formulario.php';
+                }
+            }else{
+                $this->_printErrorMsg();
             }
         }
 
@@ -815,48 +847,24 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
 
             if(isset($_GET["pay_for_order"])  && $_GET["pay_for_order"] == true) {
 
-        $row = get_post_meta($order_id, 'response_SAR', true);
-        $response_SAR = unserialize($row);
-        $row = get_post_meta($order_id, 'params_SAR', true);
-        $paramsSAR = unserialize($row);
-
-		if ($this->tipo_formulario == TP_FORM_EXTERNO) {
-			wp_redirect($response_SAR["URL_Request"]);
-			exit;
-                }
-                else {
-                    $basename = plugin_basename(dirname(__FILE__));
-                    $baseurl = plugins_url();
-                    $form_dir = "$baseurl/$basename/view/formulario-hibrido";
-                    $firstname = $paramsSAR['operacion']['CSSTFIRSTNAME'];
-                    $lastname = $paramsSAR['operacion']['CSSTLASTNAME'];
-                    $email = $paramsSAR['operacion']['CSSTEMAIL'];
-                    $merchant = $paramsSAR['operacion']['MERCHANT'];
-                    $amount = $paramsSAR['operacion']['CSPTGRANDTOTALAMOUNT'];
-                    $home = home_url("/");
-                    $arrayHome = explode ("/", $home);
-	            	//$return_URL_ERROR = $order->get_checkout_order_received_url()."&second_step=true";
-                    $return_URL_ERROR = $order->get_checkout_order_received_url()."&".http_build_query(array_merge($_GET, array('sessionid'=> $order_id, 'second_step' => 'true','cart'=>1)));
-                    $return_URL_OK = $order->get_checkout_order_received_url();
-                    $env_url = ($this->ambiente == "prod" ? TODOPAGO_FORMS_PROD : TODOPAGO_FORMS_TEST);
-                    require 'view/formulario-hibrido/formulario.php';
-		    exit;
-                }
-
-
+                $result = array (     
+                    'result' => 'success', 
+                    'redirect' => get_site_url().'/?TodoPago_redirect=true&form=ext&order='.$order_id
+                );
+                
             } else {
-            	
-            	$key=$this->method_exists_orderkey_id($order,"get_order_key");
-            	
-			$result = array(
-				'result'   => 'success',
-				'redirect' => add_query_arg('order', $order_id, add_query_arg('key', $key, $order->get_checkout_payment_url()))
-            );
-	    }
+                $result = array (     
+                     'result' => 'success', 
+                     'redirect' => add_query_arg('order', $this->method_exists_orderkey_id($order,"get_id"), add_query_arg('key',$this->method_exists_orderkey_id($order,"get_order_key"),$this->exists_woocommerce_get_page_id($order)))
+                );
+
+            }
+
+   
             return $result;
         }
         
-        public function method_exists_orderkey_id($order_object,$method_name){
+        private function method_exists_orderkey_id($order_object,$method_name){
         	
         	$gok="get_order_key";
         	$gi="get_id";
@@ -881,6 +889,17 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
         	
         	return $result;
         	
+        }
+        
+        private function exists_woocommerce_get_page_id($order_object){
+            
+            $result=$order_object->get_checkout_payment_url(true);
+            
+            if($result==NULL){
+                $result=woocommerce_get_page_id("pay");
+            }
+            
+            return $result;
         }
         
     }//End WC_TodoPago_Gateway
