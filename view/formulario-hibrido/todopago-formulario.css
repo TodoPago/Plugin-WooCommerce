@@ -8,13 +8,12 @@
 }
 */
 
-/*
+
 #tp-form-tph input, #tp-form-tph select {
-	display: block;
-	margin:8px 0px 0px 13px;
-	height: 25px;
+	display: inline-block;
+	height: 40px;
 }
-*/
+
 .tp-modal-class {
 
 }
@@ -73,4 +72,42 @@
 
 .tp-label{
 	font-style: italic;
+}
+
+#mesCbx {
+    width: 48%;
+    float: left;
+}
+
+#anioCbx {
+    width: 48%;
+    float: right;
+}
+
+#peiLbl {
+    color: inherit;
+}
+
+#peiCbx {
+        display:block;
+	vertical-align: top;
+	margin-top: 20px;
+}
+
+#peiLbl {
+    color: inherit;
+}
+
+#peiCbx {
+        display:block;
+	vertical-align: top;
+	margin-top: 20px;
+}
+
+label{
+    color:red;
+}
+
+.hidden-element{
+    opacity: 0;
 }

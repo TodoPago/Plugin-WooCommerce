@@ -2,24 +2,25 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.9.1
+    Version: 1.10.0
     Author: Todo Pago
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.9.1');
+define('TODOPAGO_PLUGIN_VERSION','1.10.0');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
-define('TODOPAGO_FORMS_PROD','https://forms.todopago.com.ar');
-define('TODOPAGO_FORMS_TEST','https://developers.todopago.com.ar');
+define('TODOPAGO_FORMS_PROD','https://forms.todopago.com.ar/resources/v2/TPBSAForm.min.js');
+define('TODOPAGO_FORMS_TEST','https://developers.todopago.com.ar/resources/v2/TPBSAForm.min.js');
 
 //use TodoPago\Sdk as Sdk;
 
 require_once(dirname(__FILE__).'/lib/vendor/autoload.php');
 require_once(dirname(__FILE__).'/lib/logger.php');
 require_once(dirname(__FILE__).'/lib/ControlFraude/ControlFraudeFactory.php');
+require_once(dirname(__FILE__).'/lib/db/AdressBook.php');
 
 //Llama a la función woocommerce_todopago_init cuando se cargan los plugins. 0 es la prioridad.
 add_action('plugins_loaded', 'woocommerce_todopago_init', 0);
@@ -99,10 +100,17 @@ function woocommerce_todopago_init(){
             $this -> expiracion_formulario_personalizado= $this -> todopago_getValueOfArray($this -> settings,'expiracion_formulario_personalizado');
             $this -> timeout_limite = $this -> todopago_getValueOfArray($this -> settings,'timeout_limite');
             
+            $this -> gmaps_validacion = $this -> todopago_getValueOfArray($this -> settings,'gmaps_validacion');
+
+            
             $this -> wpnonce_credentials = $this -> todopago_getValueOfArray($this -> settings,'wpnonce');
 
             $this -> msg['message'] = "";
             $this -> msg['class'] = "";
+            
+            //creo la base que administra las direcciones formateadas por Google Maps
+            $this -> adressbook = new AdressBook();
+            $this -> adressbook -> createTable();
 
             //Llama a la función admin_options definida más abajo
             if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')){
@@ -329,7 +337,17 @@ function woocommerce_todopago_init(){
             			'type' => 'number',
             			'id'    => 'timeout_limite',
             			'description' => 'Tiempo maximo en el que se puede realizar el pago en el formulario en milisegundos. Por defecto si no se envia el valor es de 1800000 (30 minutos)'),
-
+                
+                'gmaps_validacion' => array(
+            			'title' => 'Utilizar Google Maps',	
+            			'type'  => 'select',
+            			'description' => '¿Desea validar la dirección de compra con Google Maps?',
+            			'options' => array(
+            					'SI' => 'SI',
+            					'NO' => 'NO'
+            			)
+            	),  
+                
                 'wpnonce' => array(
                         'type'  => 'hidden',
                         'placeholder' => wp_create_nonce( 'getCredentials')
@@ -436,29 +454,56 @@ function woocommerce_todopago_init(){
         }
 
         function call_sar($paramsSAR, $logger){
- 
             $logger->debug("call_sar");
+            
             $esProductivo = $this->ambiente == "prod";
+            $md5Billing = null;
+            $md5Shipping = null;
+            $paydata_comercial = $paramsSAR['comercio'];
+            $paydata_operation = $paramsSAR['operacion'];//acá estan los datos de control de fraude
+            
+/*            if($this->gmaps_validacion=="SI"){//si uso gmaps,valido los datos de paydata
+    		$md5Billing = $this->SAR_hasher($paydata_operation, 'billing');
+    		$md5Shipping = $this->SAR_hasher($paydata_operation, 'shipping');
+    		$gMapsValidator = $this->getGoogleMapsValidator($md5Billing, $md5Shipping);
+            }
+           */
             $http_header = $this->getHttpHeader();
-            $logger->debug("http header: ".json_encode($http_header));
+            $logger->info("http header: ".json_encode($http_header));
             $connector = new \TodoPago\Sdk($http_header, $this->ambiente);
-            $logger->debug("Connector: ".json_encode($connector));
-            $response_sar = $connector->sendAuthorizeRequest($paramsSAR['comercio'], $paramsSAR['operacion']);
+            $logger->info("Connector: ".json_encode($connector));
+            
+/*            if($this->gmaps_validacion=='SI'){
+                if(isset($gMapsValidator)){
+                    $connector->setGoogleClient($gMapsValidator);
+                }else{
+                    $paydata_operation = $this->getAddressbookData($paydata_operation,$md5Billing,$md5Shipping);
+                }
+            }*/
+            
+            $response_sar = $connector->sendAuthorizeRequest($paydata_comercial,$paydata_operation);
             $logger->info('response SAR '.json_encode($response_sar));
 
-            if($response_sar["StatusCode"] == 702 && !empty($http_header) && !empty($paramsSAR['comercio']['Merchant']) && !empty($paramsSAR['comercio']['Security'])){
-                $response_sar = $connector->sendAuthorizeRequest($paramsSAR['comercio'], $paramsSAR['operacion']);
+            
+            if($response_sar["StatusCode"] == 702 && !empty($http_header) && !empty($paydata_comercial['Merchant']) && !empty($paydata_comercial['Security'])){
+                $response_sar = $connector->sendAuthorizeRequest($paydata_comercial,$paydata_operation);
                 $logger->info('reintento');
                 $logger->info('response SAR '.json_encode($response_sar));
             }
-
+            
+/*            if(isset($gMapsValidator)){
+                $this->setAddressBookData($paydata_operation,$connector->getGoogleClient()->getFinalAddress(), $md5Billing, $md5Shipping);
+            }*/
+            
             return $response_sar;
         }
-
+        
         function custom_commerce($wpdb, $order, $paramsSAR, $response_sar){
             
         	$id=$this->method_exists_orderkey_id($order,"get_id");
-        	
+        	$nombre_completo=$paramsSAR["operacion"]["CSBTFIRSTNAME"]." ".$paramsSAR["operacion"]["CSBTLASTNAME"];
+                $email=$paramsSAR["operacion"]["CSBTEMAIL"];
+                
             $this->_persistResponse_SAR($id, $response_sar, $paramsSAR);
 
             $wpdb->insert(
@@ -563,7 +608,6 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
                     return $this->take_action($order, $data_GAA, $logger);
                 }
             }
-
         }
 
         function call_GAA($order_id, $logger){
@@ -611,7 +655,7 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
         	return $data_GAA;
         }
 
-        function take_action($order, $data_GAA, $logger){
+        public function take_action($order, $data_GAA, $logger){
             global $wpdb;
 	    $id = $this->method_exists_orderkey_id($order,"get_id");
             $wpdb->update(
@@ -658,12 +702,62 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
 
         }
 
-        function _printErrorMsg($msg = null){
+        public function _printErrorMsg($msg = null){
 		if($msg != null) {
             echo '<div class="woocommerce-error">Lo sentimos, ha ocurrido un error. '.$msg.' <a href="' . home_url() . '" class="wc-backward">Volver a la página de inicio</a></div>';
 		} else {
             echo '<div class="woocommerce-error">Lo sentimos, ha ocurrido un error. <a href="' . home_url() . '" class="wc-backward">Volver a la página de inicio</a></div>';
 		}
+        }
+
+        function process_payment($order_id){
+            global $woocommerce;
+            $order = new WC_Order( $order_id );
+
+            if(isset($_GET["pay_for_order"])  && $_GET["pay_for_order"] == true) {
+
+                $result = array (     
+                    'result' => 'success', 
+                    'redirect' => get_site_url().'/?TodoPago_redirect=true&form=ext&order='.$order_id
+                );
+                
+            } else {
+                $result = array (     
+                     'result' => 'success', 
+                     'redirect' => add_query_arg('order', $this->method_exists_orderkey_id($order,"get_id"), add_query_arg('key',$this->method_exists_orderkey_id($order,"get_order_key"),$this->exists_woocommerce_get_page_id($order)))
+                );
+
+            }
+
+   
+            return $result;
+        }
+        
+        private function method_exists_orderkey_id($order_object,$method_name){
+        	
+        	$gok="get_order_key";
+        	$gi="get_id";
+        	$result="";
+        	
+        	if($method_name==$gok){
+        		
+        		if(method_exists($order_object,$gok)) {
+        			$result = $order_object->get_order_key();
+        		} else {
+        			$result = $order_object->order_key;
+        		}
+        		
+        	}else{
+        		
+        		if(method_exists($order_object,$gi)) {
+        			$result = $order_object->get_id();
+        		} else {
+        			$result = $order_object->id;
+        		}
+        	}
+        	
+        	return $result;
+        	
         }
 
         private function setOrderStatus($order, $statusName){
@@ -839,57 +933,94 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
                 //return false;
             }
         }
-
-
-        function process_payment($order_id){
-            global $woocommerce;
-            $order = new WC_Order( $order_id );
-
-            if(isset($_GET["pay_for_order"])  && $_GET["pay_for_order"] == true) {
-
-                $result = array (     
-                    'result' => 'success', 
-                    'redirect' => get_site_url().'/?TodoPago_redirect=true&form=ext&order='.$order_id
-                );
-                
-            } else {
-                $result = array (     
-                     'result' => 'success', 
-                     'redirect' => add_query_arg('order', $this->method_exists_orderkey_id($order,"get_id"), add_query_arg('key',$this->method_exists_orderkey_id($order,"get_order_key"),$this->exists_woocommerce_get_page_id($order)))
-                );
-
+        
+        private function getGoogleMapsValidator($md5Billing, $md5Shipping) //Instancia Google en caso de no encontrar la ubicación a cargar en la tabla
+        {   
+            if (empty($this->adressbook->findMd5($md5Billing)) || empty($this->adressbook->findMd5($md5Shipping))){        
+                return new TodoPago\Client\Google();
             }
-
-   
-            return $result;
+            else
+                return null;
         }
         
-        private function method_exists_orderkey_id($order_object,$method_name){
-        	
-        	$gok="get_order_key";
-        	$gi="get_id";
-        	$result="";
-        	
-        	if($method_name==$gok){
-        		
-        		if(method_exists($order_object,$gok)) {
-        			$result = $order_object->get_order_key();
-        		} else {
-        			$result = $order_object->order_key;
-        		}
-        		
-        	}else{
-        		
-        		if(method_exists($order_object,$gi)) {
-        			$result = $order_object->get_id();
-        		} else {
-        			$result = $order_object->id;
-        		}
-        	}
-        	
-        	return $result;
-        	
+        private function SAR_hasher($paramsSAR, $tipoDeCompra)
+        {
+            if($tipoDeCompra === 'billing')
+                $arrayCompra = array('CSBTSTREET1' => 1, 'CSBTSTATE' => 2, 'CSBTCITY' => 3, 'CSBTCOUNTRY' => 3, 'CSBTPOSTALCODE' => 5);
+                elseif ($tipoDeCompra === 'shipping')
+                $arrayCompra = array('CSSTSTREET1' => 1, 'CSSTSTATE' => 2, 'CSSTCITY' => 3, 'CSSTCOUNTRY' => 3, 'CSSTPOSTALCODE' => 5);
+                else {
+                        $this->tplogger->error("No se recibió un input válido en el array de SAR_hasher()");
+                        $arrayCompra = array('CSSTSTREET1' => 1, 'CSSTSTATE' => 2, 'CSSTCITY' => 3, 'CSSTCOUNTRY' => 3, 'CSSTPOSTALCODE' => 5);
+                }
+                return md5(implode(",", array_intersect_key($paramsSAR, $arrayCompra)));//convierte un array en string separados por comas y lo pasa a md5
         }
+        
+        private function setAddressBookData($originalData,$gResponse,$md5Billing,$md5Shipping)
+        {   
+            $opBilling = $gResponse['billing'];
+            $opShipping = $gResponse['shipping'];
+
+            $this->recordAdressValidator($originalData,$opBilling,$md5Billing,"B");
+
+            if($md5Billing !== $md5Shipping){
+                $this->recordAdressValidator($originalData,$opShipping,$md5Shipping,"S");
+            }
+        }
+        
+        private function getAddressbookData($operationData, $md5Billing, $md5Shipping) //rellena los datos de la operación con la info almacenada en nuestra agenda
+        {
+            $arrayBilling = $this -> adressbook->getData($md5Billing);
+            $arrayShipping = $this -> adressbook->getData($md5Shipping);
+
+            if (!empty($arrayBilling)) {
+                    $operationData['CSBTSTREET1'] = $arrayBilling->street;
+                    $operationData['CSBTSTATE'] = $arrayBilling->state;
+                    $operationData['CSBTCITY'] = $arrayBilling->city;
+                    $operationData['CSBTCOUNTRY'] = $arrayBilling->country;
+                    $operationData['CSBTPOSTALCODE'] = $arrayBilling->postal;
+            }
+            if (!empty($arrayBilling)) {
+                    $operationData['CSSTSTREET1'] = $arrayShipping->street;
+                    $operationData['CSSTSTATE'] = $arrayShipping->state;
+                    $operationData['CSSTCITY'] = $arrayShipping->city;
+                    $operationData['CSSTCOUNTRY'] = $arrayShipping->country;
+                    $operationData['CSSTPOSTALCODE'] = $arrayShipping->postal;
+            }
+            return $operationData;
+        }
+        
+        private function recordAdressValidator($originalData,$gResponse,$md5,$type){
+            if(!empty($gResponse)){//sí la respuesta de Google no es vacía
+                $arrayDif=$this->compareArray($this->formArray($type),$gResponse);//array que muestra la diferencia de
+                //las llaves que no están en la respuesta de Google
+                $arrayDifNumber=sizeof($arrayDif);
+                $postalCodeKey='CS'.$type.'TPOSTALCODE';
+                $postalCode=$originalData[$postalCodeKey];//seteo como default el codigo postal ingresado por el usuario
+                $isRecordable=true;
+
+                switch($arrayDifNumber){
+                        case 0:$postalCode=$gResponse[$postalCodeKey];break;
+                        case 1:$isRecordable=array_key_exists($postalCodeKey,$arrayDif);break;
+                        default:$isRecordable=false;break;
+                }
+
+                if($isRecordable){
+                        $this->adressbook->recordAddress($md5,$gResponse['CS'.$type.'TSTREET1'], $gResponse['CS'.$type.'TSTATE'], $gResponse['CS'.$type.'TCITY'], $gResponse['CS'.$type.'TCOUNTRY'], $postalCode);
+                }    		
+            }
+        }
+        
+        private function compareArray($arrayExpected,$arrayActual){//compara dos arrays,si son iguales , devuelve un array vacio
+            $result=array_diff_key($arrayExpected,$arrayActual);    	
+            return $result;	
+        }
+    
+        private function formArray($letter){//define un array con las llaves a traer , pasandole la letra correspondiente(shiiping o billing)
+            return array('CS'.$letter.'TSTREET1'=>1,'CS'.$letter.'TSTATE'=>2,'CS'.$letter.'TCITY'=>3,'CS'.$letter.'TCOUNTRY'=>4,'CS'.$letter.'TPOSTALCODE'=>5);
+        }
+        
+        
         
         private function exists_woocommerce_get_page_id($order_object){
             
