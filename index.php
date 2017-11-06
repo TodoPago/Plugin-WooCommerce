@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.10.0
+    Version: 1.10.1
     Author: Todo Pago
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION','1.10.0');
+define('TODOPAGO_PLUGIN_VERSION','1.10.1');
 define('TP_FORM_EXTERNO', 'ext');
 define('TP_FORM_HIBRIDO', 'hib');
 define('TODOPAGO_DEVOLUCION_OK', 2011);
@@ -933,10 +933,13 @@ if(isset($_GET['timeout']) && $_GET['timeout']=="expired"){
                 //return false;
             }
         }
-        
+
         private function getGoogleMapsValidator($md5Billing, $md5Shipping) //Instancia Google en caso de no encontrar la ubicación a cargar en la tabla
-        {   
-            if (empty($this->adressbook->findMd5($md5Billing)) || empty($this->adressbook->findMd5($md5Shipping))){        
+        {
+            $b = $this->adressbook->findMd5($md5Billing);
+            $s = $this->adressbook->findMd5($md5Shipping);
+
+            if (empty($b) || empty($s)){
                 return new TodoPago\Client\Google();
             }
             else
