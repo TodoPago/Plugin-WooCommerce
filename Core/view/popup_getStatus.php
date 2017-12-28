@@ -1,0 +1,5 @@
+<?php
+
+/*
+ * SILENCE IS GOLDEN... RETRIEVER
+ */

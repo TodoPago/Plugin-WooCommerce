@@ -1,0 +1,68 @@
+[
+    {
+        "name": "todopago/php-sdk",
+        "version": "V1.10.1",
+        "version_normalized": "1.10.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/TodoPago/SDK-PHP.git",
+            "reference": "5b65dc4aadb7137973be1091d14b57a590c18ccd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/TodoPago/SDK-PHP/zipball/5b65dc4aadb7137973be1091d14b57a590c18ccd",
+            "reference": "5b65dc4aadb7137973be1091d14b57a590c18ccd",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "require-dev": {
+            "php-mock/php-mock-phpunit": "^1.1",
+            "phpunit/phpunit": "^5.7"
+        },
+        "time": "2017-08-09 19:37:23",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "TodoPago\\": "TodoPago/lib",
+                "TodoPago\\Test\\": "TodoPago/test"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "description": "SDK para TodoPago"
+    },
+    {
+        "name": "apache/log4php",
+        "version": "2.3.0",
+        "version_normalized": "2.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://git-wip-us.apache.org/repos/asf/logging-log4php.git",
+            "reference": "cac428b6f67d2035af39784da1d1a299ef42fcf2"
+        },
+        "require": {
+            "php": ">=5.2.7"
+        },
+        "time": "2012-10-26 09:13:25",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "src/main/php/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "description": "A versatile logging framework for PHP",
+        "homepage": "http://logging.apache.org/log4php/",
+        "keywords": [
+            "log",
+            "logging",
+            "php"
+        ]
+    }
+]

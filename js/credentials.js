@@ -80,20 +80,5 @@ jQuery(function ($) {
                 }
                 
            }
-        } 
-        
-        if( $("#woocommerce_todopago_enabledCuotas").prop('checked') ) {
-                $("#woocommerce_todopago_max_cuotas").prop('disabled', false);           
-            }else{
-                $("#woocommerce_todopago_max_cuotas").prop('disabled', true);        
-        } 
-        
-        $("#woocommerce_todopago_enabledCuotas").click(function() {
-        
-            if( $("#woocommerce_todopago_enabledCuotas").prop('checked') ) {
-                $("#woocommerce_todopago_max_cuotas").prop('disabled', false);           
-            }else{
-                $("#woocommerce_todopago_max_cuotas").prop('disabled', true);        
-            }
-        });       
+        }
 });

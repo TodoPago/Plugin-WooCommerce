@@ -1,6 +1,6 @@
 <a name="inicio"></a>
-WooCommerce- módulo Todo Pago (v1.6.0)
-============
+#Todo Pago - Módulo para WooCommerce
+### Versión 1.12.0
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
 + [Consideraciones Generales](#consideracionesgenerales)
@@ -8,7 +8,7 @@ Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
 + [Configuración](#configuracion)
    + [Activación](#activacion)
    + [Configuración plug in](#confplugin)
-   + [Formulario Hibrido](#)
+   + [Formulario Hibrido](#formHibrido)
    + [Obtener datos de configuracion](#getcredentials)
    + [Configuración de Maximo de Cuotas](#maxcuotas)
 + [Prevencion de Fraude](#cybersource)
@@ -49,7 +49,7 @@ Descomentar: <em>extension=php_openssl.dll</em> del php.ini
 
 <a name="activacion"></a>
 #### Activación
-La activación se realiza como cualquier plugin de Wordpress: Desde Plugins -> Plugins instalados -> activar el plugin de nombre <strong>TodoPago para WooCommerce</strong>.
+La activación se realiza como cualquier plugin de Wordpress: Desde Plugins -> Plugins instalados -> activar el plugin de nombre <strong>Todo Pago para WooCommerce</strong>.
 
 <a name="confplugin"></a>
 #### Configuración plug in
@@ -81,25 +81,25 @@ Para llegar al menu de configuración del plugin ir a: <em>WooCommerce -> Ajuste
 En la configuracion del plugin tambien estara la posibilidad de mostrarle al cliente el formulario de pago de TodoPago integrada en el sitio. 
 Para esto , en la configuracion se debe seleccionar la opcion Integrado en el campo de seleccion de fromulario
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/10-%20formulario%20hibrido.png)</br>
-<sub></br>Del lado del cliente el formulario se vera asi:</br></sub> 
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/14-%20formulario%20hibrido.PNG)
+<sub></br>Del lado del cliente el formulario se verá así:</br></sub> 
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/11_formulario_hibrido2.png)
 </br>El formulario tiene dos formas de pago, ingresando los datos de una tarjeta ó utilizando la billetera de Todopago. Al ir a "Pagar con Billetera" desplegara una ventana que permitira ingresar a billetera y realizar el pago.</br>
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/15-%20billetera%20virtual.PNG)
 
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="getcredentials"></a>
-#### Obtener datos de configuracion
-Se puede obtener los datos de configuracion del plugin con solo loguearte con tus credenciales de Todopago. </br>
-a. Ir a la opcion Obtener credenciales</br>
+#### Obtener datos de configuración
+Se puede obtener los datos de configuración del plugin con solo loguearte con tus credenciales de Todopago. </br>
+a. Ir a la opción Obtener credenciales</br>
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/9-credenciales.png) </br>
-b. Loguearse con el mail y password de Todopago.</br>
-c. Los datos se cargaran automaticamente en los campos Merchant ID y Security code en el ambiente correspondiente y solo hay que hacer click en el boton guardar datos y listo.</br>
+b. Loguearse con el mail y password de Todopago.</br>3
+c. Los datos se cargarán automáticamente en los campos Merchant ID y Security code en el ambiente correspondiente y solo hay que hacer click en el botón guardar datos y listo.</br>
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/3-%20configuracion%20developers.PNG)</br>
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="maxcuotas"></a>
-#### Configuración de Maximo de Cuotas
+#### Configuración de Máximo de Cuotas
 Se puede configurar la cantidad máxima de cuotas que ofrecerá el formulario de TodoPago con el campo cantidad máxima de cuotas. Para que se tenga en cuenta este valor se debe habilitar el campo Habilitar máximo de cuotas y tomará el valor fijado para máximo de cuotas. En caso que esté habilitado el campo y no haya un valor puesto para las cuotas se tomará el valor 12 por defecto.
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/13-%20cuotas.png)</br>
 
@@ -147,7 +147,7 @@ Las consideración para el caso de empresas del rubro <strong>RETAIL</strong> so
  
 <a name="prevfraudedatosadicionales" ></a>
 #### Nuevos Atributos en los productos
-Para efectivizar la prevenci&oacute;n de fraude se han creado nuevos atributos de producto dentro de la categoria <em>"Prevenci&oacute;n de Fraude"</em>.
+Para efectivizar la prevenciín de fraude se han creado nuevos atributos de producto dentro de la categoria <em>"Prevenci&oacute;n de Fraude"</em>.
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/12-%20prevencion%20fraude.PNG)
 
 __Estos campos no son obligatorios aunque si requeridos para Control de Fraude__
@@ -393,7 +393,7 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
   <thead>
   <tbody>
     <tr>
-      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.6.0</a></td>
+      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.12.0</a></td>
       <td>Stable (Current version)</td>
       <td>WordPress 3.7.5 <br />
           WooCommerce 2.3.5

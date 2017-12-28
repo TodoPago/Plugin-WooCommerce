@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="." tests="46" assertions="113" failures="0" errors="0" time="1.180076">
+    <testsuite name="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" tests="12" assertions="30" failures="0" errors="0" time="0.423249">
+      <testcase name="testGetCredentialsOk" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="13" assertions="3" time="0.219436"/>
+      <testcase name="testGetCredentialsUserEmpty" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="35" assertions="1" time="0.040186"/>
+      <testcase name="testGetCredentialsPasswordEmpty" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="54" assertions="2" time="0.027639"/>
+      <testcase name="testGetCredentialsFailConnection" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="71" assertions="1" time="0.022570"/>
+      <testcase name="testGetCredentialsFailUser" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="88" assertions="2" time="0.021074"/>
+      <testcase name="testGetCredentialsFailPassword" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="105" assertions="2" time="0.018819"/>
+      <testcase name="testGetCredentialsTextEmptyFieldException" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="122" assertions="2" time="0.009941"/>
+      <testcase name="testResponseException" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="130" assertions="1" time="0.006347"/>
+      <testcase name="testConnectionException" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="138" assertions="1" time="0.007708"/>
+      <testcase name="testUserClassInvokeOne" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="143" assertions="5" time="0.032839"/>
+      <testcase name="testUserClassInvokeTwo" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="155" assertions="5" time="0.007812"/>
+      <testcase name="testUserClassInvokeThree" class="TodoPago\Test\CredentialsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/CredentialsTest.php" line="165" assertions="5" time="0.008878"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\GetAuthorizeAnswerTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetAuthorizeAnswerTest.php" tests="3" assertions="11" failures="0" errors="0" time="0.198746">
+      <testcase name="testGetAuthorizeAnswerOk" class="TodoPago\Test\GetAuthorizeAnswerTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetAuthorizeAnswerTest.php" line="17" assertions="4" time="0.129855"/>
+      <testcase name="testGetAuthorizeAnswerFail" class="TodoPago\Test\GetAuthorizeAnswerTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetAuthorizeAnswerTest.php" line="35" assertions="4" time="0.051180"/>
+      <testcase name="testGetAuthorizeAnswer702" class="TodoPago\Test\GetAuthorizeAnswerTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetAuthorizeAnswerTest.php" line="55" assertions="3" time="0.017711"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\GetEndpointFormTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetEndpointFormTest.php" tests="4" assertions="4" failures="0" errors="0" time="0.027068">
+      <testcase name="testEndpointFormFixedDevelopers" class="TodoPago\Test\GetEndpointFormTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetEndpointFormTest.php" line="11" assertions="1" time="0.007494"/>
+      <testcase name="testEndpointFormFixedProduccion" class="TodoPago\Test\GetEndpointFormTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetEndpointFormTest.php" line="19" assertions="1" time="0.006360"/>
+      <testcase name="testEndpointFormInstanceDevelopers" class="TodoPago\Test\GetEndpointFormTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetEndpointFormTest.php" line="28" assertions="1" time="0.006652"/>
+      <testcase name="testEndpointFormInstanceProduccion" class="TodoPago\Test\GetEndpointFormTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/GetEndpointFormTest.php" line="36" assertions="1" time="0.006562"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\OperationsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/OperationsTest.php" tests="4" assertions="4" failures="0" errors="0" time="0.115060">
+      <testcase name="testGetStatusOk" class="TodoPago\Test\OperationsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/OperationsTest.php" line="13" assertions="1" time="0.029509"/>
+      <testcase name="testGetStatusFail" class="TodoPago\Test\OperationsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/OperationsTest.php" line="28" assertions="1" time="0.017564"/>
+      <testcase name="testGetStatusEmpty" class="TodoPago\Test\OperationsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/OperationsTest.php" line="44" assertions="1" time="0.017504"/>
+      <testcase name="testGetByRangeDateTimeOk" class="TodoPago\Test\OperationsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/OperationsTest.php" line="59" assertions="1" time="0.050483"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\PaymentMethodsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/PaymentMethodsTest.php" tests="4" assertions="8" failures="0" errors="0" time="0.111458">
+      <testcase name="testDiscoverOk" class="TodoPago\Test\PaymentMethodsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/PaymentMethodsTest.php" line="13" assertions="2" time="0.035243"/>
+      <testcase name="testDiscoverFail" class="TodoPago\Test\PaymentMethodsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/PaymentMethodsTest.php" line="28" assertions="1" time="0.019566"/>
+      <testcase name="testGetAllPaymentMethodsOk" class="TodoPago\Test\PaymentMethodsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/PaymentMethodsTest.php" line="43" assertions="4" time="0.020950"/>
+      <testcase name="testGetAllPaymentMethodsFail" class="TodoPago\Test\PaymentMethodsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/PaymentMethodsTest.php" line="60" assertions="1" time="0.035699"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\RefundTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/RefundTest.php" tests="6" assertions="22" failures="0" errors="0" time="0.095842">
+      <testcase name="testRefundRequestOk" class="TodoPago\Test\RefundTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/RefundTest.php" line="17" assertions="4" time="0.028349"/>
+      <testcase name="testRefundRequestFail" class="TodoPago\Test\RefundTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/RefundTest.php" line="36" assertions="4" time="0.013528"/>
+      <testcase name="testRefundRequest702" class="TodoPago\Test\RefundTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/RefundTest.php" line="55" assertions="3" time="0.014263"/>
+      <testcase name="testVoidRequestOk" class="TodoPago\Test\RefundTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/RefundTest.php" line="74" assertions="4" time="0.011854"/>
+      <testcase name="testVoidRequestFail" class="TodoPago\Test\RefundTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/RefundTest.php" line="92" assertions="4" time="0.013423"/>
+      <testcase name="testVoidRequest702" class="TodoPago\Test\RefundTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/RefundTest.php" line="111" assertions="3" time="0.014425"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" tests="7" assertions="17" failures="0" errors="0" time="0.112245">
+      <testcase name="testProxy" class="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" line="19" assertions="8" time="0.013809"/>
+      <testcase name="testConnection" class="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" line="44" assertions="2" time="0.010941"/>
+      <testcase name="testLocalcert" class="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" line="60" assertions="2" time="0.029698"/>
+      <testcase name="testSanitizeValue" class="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" line="76" assertions="1" time="0.008189"/>
+      <testcase name="testProd" class="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" line="83" assertions="1" time="0.010945"/>
+      <testcase name="testCurlSoapClient" class="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" line="98" assertions="1" time="0.018335"/>
+      <testcase name="testCurlSoapClientFail" class="TodoPago\Test\SdkUtilsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SdkUtilsTest.php" line="121" assertions="2" time="0.020328"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\SendAuthorizeRequestTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SendAuthorizeRequestTest.php" tests="3" assertions="11" failures="0" errors="0" time="0.064876">
+      <testcase name="testSendAuthorizeRequestOk" class="TodoPago\Test\SendAuthorizeRequestTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SendAuthorizeRequestTest.php" line="19" assertions="4" time="0.029005"/>
+      <testcase name="testSendAuthorizeRequestFail" class="TodoPago\Test\SendAuthorizeRequestTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SendAuthorizeRequestTest.php" line="38" assertions="4" time="0.017903"/>
+      <testcase name="testSendAuthorizeRequest702" class="TodoPago\Test\SendAuthorizeRequestTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SendAuthorizeRequestTest.php" line="57" assertions="3" time="0.017968"/>
+    </testsuite>
+    <testsuite name="TodoPago\Test\SpecialConditionsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SpecialConditionsTest.php" tests="3" assertions="6" failures="0" errors="0" time="0.031533">
+      <testcase name="testSendAuthorizeRequestPayloadEncoding" class="TodoPago\Test\SpecialConditionsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SpecialConditionsTest.php" line="31" assertions="4" time="0.014945"/>
+      <testcase name="testSoapClient" class="TodoPago\Test\SpecialConditionsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SpecialConditionsTest.php" line="50" assertions="1" time="0.008214"/>
+      <testcase name="testCurlClient" class="TodoPago\Test\SpecialConditionsTest" file="/var/dev/src/TodoPago/Dev/dev-sdk-php/TodoPago/test/SpecialConditionsTest.php" line="62" assertions="1" time="0.008374"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

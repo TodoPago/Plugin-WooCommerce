@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<title>Formulario Híbrido</title>
+		<meta charset="UTF-8">
+		<script src="https://developers.todopago.com.ar/resources/TPHybridForm-v0.1.js"></script>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+		<script type="text/javascript">
+
+		</script>
+	</head>
+	<body class="contentContainer">
+		<div id="tp-form-tph">
+			<div id="tp-logo"></div>
+			<div id="tp-content-form">
+				<span class="tp-label">Elegí tu forma de pago </span>
+				<div>
+					<select id="formaDePagoCbx"></select>	
+				</div>
+				<div>
+					<select id="bancoCbx"></select>
+				</div>
+				<div>
+					<select id="promosCbx" class="left"></select>
+					<label id="labelPromotionTextId" class="left tp-label"></label>
+					<div class="clear"></div>
+				</div>
+				<div><!-- Para los casos en el que el comercio opera con PEI -->
+					<label id="labelPeiCheckboxId"></label>
+					<input id="peiCbx"/>
+				</div>
+
+				<div>
+					<input id="numeroTarjetaTxt"/>
+				</div>
+				<div class="dateFields">
+		            <input id="mesTxt" class="left">
+		            <span class="left spacer">/</span>
+		            <input id="anioTxt" class="left">
+		            <div class="clear"></div>
+		      	</div>
+				<div>
+					<input id="codigoSeguridadTxt" class="left"/>
+					<label id="labelCodSegTextId" class="left tp-label"></label>
+					<div class="clear"></div>
+				</div>
+				<div>
+					<input id="apynTxt"/>
+				</div>
+				<div>
+					<select id="tipoDocCbx"></select>
+				</div>
+				<div>
+					<input id="nroDocTxt"/>	
+				</div>
+				<div>
+					<input id="emailTxt"/><br/>
+				</div>
+				<div><!-- Para los casos en el que el comercio opera con PEI -->
+				        <label id="labelPeiTokenTextId"></label>
+					<input id="peiTokenTxt"/>
+				</div>
+				<div id="tp-bt-wrapper">
+					<button id="MY_btnPagarConBilletera" class="tp-button"/>
+					<button id="MY_btnConfirmarPago" class="tp-button"/>
+				</div>
+			</div>	
+		</div>
+
+	</body>
+	<script>
+		//PublicRequesKey, esta se obtiene de la respuesta del SAR
+		var publicKey = "te5ee34d6-662e-352e-ecdb-02256e6b93d3";
+		/*var mail = "prueba@tpago.com";
+		var completeName = "Juan Perez";
+		var dni = '31345234';
+		var defDniType = 'CI';*/
+
+		/************* CONFIGURACION DEL API ************************/
+		window.TPFORMAPI.hybridForm.initForm({
+		    callbackValidationErrorFunction: 'validationCollector',
+	            callbackCustomSuccessFunction: 'customPaymentSuccessResponse',
+                    callbackBilleteraFunction: 'billeteraPaymentResponse',
+	            callbackCustomErrorFunction: 'customPaymentErrorResponse',
+                    callbackBilleteraFunction: 'billeteraPaymentResponse',
+	            botonPagarId: 'MY_btnConfirmarPago',
+	            botonPagarConBilleteraId: 'MY_btnPagarConBilletera',
+	            modalCssClass: 'modal-class',
+	            modalContentCssClass: 'modal-content',
+	            beforeRequest: 'initLoading',
+	            afterRequest: 'stopLoading'
+		});
+
+		/************* SETEO UN ITEM PARA COMPRAR ************************/
+	        window.TPFORMAPI.hybridForm.setItem({
+	            publicKey: publicKey//,
+	            /*defaultNombreApellido: completeName,
+	            defaultNumeroDoc: dni,
+	            defaultMail: mail,
+	            defaultTipoDoc: defDniType*/
+	        });
+		
+		//callbacks de respuesta del pago
+		function validationCollector(parametros) {
+			console.log("My validator collector");
+			console.log(parametros.field + " ==> " + parametros.error);
+			console.log(parametros);
+		}
+		function billeteraPaymentResponse(response) {
+			console.log("My wallet callback");
+			console.log(response.ResultCode + " : " + response.ResultMessage);
+			console.log(response);
+		}
+		function customPaymentSuccessResponse(response) {
+			console.log("My custom payment success callback");
+			console.log(response.ResultCode + " : " + response.ResultMessage);
+			console.log(response);
+		}
+		function customPaymentErrorResponse(response) {
+			console.log("Mi custom payment error callback");
+			console.log(response.ResultCode + " : " + response.ResultMessage);
+			console.log(response);
+		}
+		function initLoading() {
+			console.log('Cargando');
+		}
+		function stopLoading() {
+			console.log('Stop loading...');
+		}
+	</script>
+</html>

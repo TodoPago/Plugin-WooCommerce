@@ -3,14 +3,14 @@ Contributors: todopago
 Tags: todopago, payment, woocommerce
 Requires at least: 3.5.7
 Tested up to: 4.6.1
-Stable tag: V1.6.0
+Stable tag: V1.7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Plugin de integración de TodoPago para WooCommerce
 
 == Description ==
-WooCommerce- Módulo Todo Pago (v1.6.0)
+WooCommerce- Módulo Todo Pago (v1.12.0)
 
 == Consideraciones Generales ==
 El plug in de pagos de <strong>Todo Pago</strong>, provee a las tiendas WooCommerce de un nuevo método de pago, integrando la tienda al gateway de pago.

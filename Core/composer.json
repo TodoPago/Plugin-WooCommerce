@@ -1,0 +1,27 @@
+{
+  "require": {
+    "todopago/php-sdk": "^1.10",
+    "apache/log4php": "^2.3",
+    "Core": "1.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "TodoPago\\": [
+        "",
+        "AbstractClass/",
+        "Address/",
+        "Credentials/",
+        "Merchant/",
+        "Order/",
+        "Product/",
+        "Config/",
+        "Transaction/",
+        "Utils/",
+        "ControlFraude/",
+        "Customer/",
+        "Exception/",
+        "Exception/ErrorType/"
+      ]
+    }
+  }
+}

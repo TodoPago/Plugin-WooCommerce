@@ -1,0 +1,276 @@
+/* Hoja de estilo del formulario */
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Roboto'), local('Roboto-Regular'), url(roboto.woff2) format('woff2');
+}
+
+/* Modificaciones para WP */
+
+#tpForm, input, select, .advertencia {
+    font-family: 'Roboto', sans-serif !important
+}
+
+input, select {
+    box-sizing: border-box;
+    font-size: 12px !important;
+    padding-left: 4px
+}
+
+:-ms-input-placeholder {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+::placeholder {
+    font-size: 12px;
+    opacity: 0.8;
+    padding: 0.5rem !important;
+}
+
+#peiLbl {
+    font-weight: 100;
+    font-size: 0.8em;
+}
+
+#promosLbl {
+    font-size: 0.8em;
+}
+
+.tp-modal-class {
+
+}
+
+.tp-modal-content {
+
+}
+
+#tp-bt-wrapper {
+    float: left;
+}
+
+#tp-logo {
+    margin: 10px 0;
+}
+
+#tp-content-form {
+    width: 500px;
+    margin: 0 auto;
+}
+
+#tp-content-form #codigoSeguridadTxt {
+
+}
+
+.tp-spacer {
+    /*margin:14px -5px 0 9px;*/
+}
+
+.tp-right {
+    float: right;
+}
+
+.tp-label {
+    font-style: italic;
+}
+
+.not-input-max {
+    width: inherit;
+}
+
+.float-input-right {
+    float: right;
+}
+
+@keyframes barFill {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+.formuHibrido {
+    width: 100%;
+}
+
+.formuHibrido button {
+    margin: 5px;
+    height: 60px;
+}
+
+.advertencia {
+    color: red;
+    padding: 1px;
+    background-color: white;
+    z-index: 100;
+    font-size: 11px !important;
+}
+
+.progress {
+    height: 40px;
+    width: 100%
+}
+
+.fail {
+    background-color: lightpink;
+    border-color: red;
+}
+
+.input {
+    margin: auto;
+    height: 40px;
+    background: #F8F8F8;
+    border: 1px solid #CCCCCC;
+    width: 100% !important;;
+}
+
+input {
+    font-size: medium
+}
+
+.modal-class {
+}
+
+.modal-content {
+}
+
+#todopago_logo {
+    width: 110px;
+    height: 40px
+}
+
+#tpForm {
+    width: 100%;
+    opacity: 0;
+}
+
+.order_details {
+    transform: translateY(20%);
+}
+
+#loading-hibrid {
+    border-radius: 0 5px 5px 0;
+    background-color: rgb(244, 0, 122);
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(244, 180, 122, .5) 35px, rgba(244, 200, 122, .5) 70px);
+    width: 0;
+    animation-name: barFill;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    height: 100%;
+}
+
+.row, .static-row {
+    height: 60px;
+    width: 100%;
+    margin-bottom: 25px;
+    flex-direction: row;
+    justify-content: space-between;
+    display: inline-flex;
+}
+
+.bloque-full {
+    flex: 1;
+}
+
+.bloque-small {
+    flex: 1;
+}
+
+.bloque-medium {
+    flex: 2;
+}
+
+.bloque-big {
+    flex: 3;
+}
+
+.bloque {
+    margin: 0 0 0 10px;
+    padding: 1px;
+    height: 60px;
+}
+
+.left-col, .right-col {
+    width: 49%;
+}
+
+.col {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    display: inline-flex;
+}
+
+.left-col {
+    flex-direction: row;
+    justify-content: space-between;
+    display: inline-flex;
+}
+
+.right-col {
+    float: right;
+    right: 0;
+    display: inline-flex;
+    justify-content: space-between;
+}
+
+.loaded-form {
+    display: none
+}
+
+#row-pei {
+    display: none;
+    margin-bottom: 60px;
+    margin-top: -15px;
+}
+
+.button-primary:enabled {
+    color: white;
+    background-color: rgb(5, 165, 203);
+    background-image: none;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-position-x: 0;
+    background-position-y: 0;
+    background-size: auto auto;
+}
+
+#promos-row, #botonera-row {
+    height: 30px;
+}
+
+#codigo-col {
+
+}
+
+#peiCbx {
+    width: 10px !important;
+    float: right;
+}
+
+#tokenpei-row, #tokenpei-bloque {
+    height: 0;
+}
+
+@media only screen and (orientation: portrait) {
+    .left-col, .right-col {
+        width: 100%;
+        max-height: 55px !important;
+    }
+
+    .row {
+        height: 120px !important;
+        margin-bottom: 20px !important;
+        width: 95%;
+    }
+
+    .row-pei {
+        height: 100px
+    }
+}

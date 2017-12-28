@@ -1,0 +1,30 @@
+.get-status-content {
+    background-color: white;
+    width: 500px;
+    height: 500px;
+    margin: auto;
+    margin-top: 50px;
+    overflow-Y: scroll;
+    color: black;
+    z-index: 2010;
+    padding: 4px;
+    box-shadow: 10px 5px 5px black;
+}
+
+h2 {
+    color: black
+}
+
+.separador {
+    height: 1px;
+    left: 20%;
+    width: 80%;
+    margin-bottom: 10px;
+    background-color: dimgray;
+}
+
+.tp-close {
+    color: black;
+    float:right;
+    cursor: pointer;
+}
