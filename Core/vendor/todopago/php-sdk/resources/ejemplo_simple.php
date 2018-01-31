@@ -103,6 +103,11 @@ $date1 = date("Y-m-d", time()-60*60*24*30);
 $date2 = date("Y-m-d", time());
 $optionsRDT = array('MERCHANT'=>2658, "STARTDATE" => $date1, "ENDDATE" => $date2, "PAGENUMBER" => 1);
 
+// EJEMPLO CON HORA
+$date1 = DateTime::createFromFormat("Y-m-d\TH:i:s","2017-10-10T10:10:10");
+$date2 = DateTime::createFromFormat("Y-m-d\TH:i:s","2017-10-10T11:10:10");
+$optionsRDT = array('MERCHANT'=>2658, "STARTDATE" => $date1, "ENDDATE" => $date2, "PAGENUMBER" => 1);
+
 
 $devol = array(
 	"Security" => "108fc2b7c8a640f2bdd3ed505817ffde",

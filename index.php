@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.11.0
+    Version: 1.11.1
     Author: Todo Pago
 */
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION', '1.11.0');
+define('TODOPAGO_PLUGIN_VERSION', '1.11.1');
 define('TP_FORM_EXTERNO', 'externo');
 define('TP_FORM_HIBRIDO', 'hibrido');
 
@@ -431,15 +431,37 @@ function woocommerce_todopago_init()
             );
         }
 
+        function build_todopago_save_warning()
+        {
+            ?>
+            <style>
+                .tp-update-box {
+                    text-align: center;
+                    font-size: 1.2em;
+                    width: 100%;
+                    height: 30px;
+                    background-color: rgb(255, 231, 62);
+                    border: 1px solid rgb(255, 81, 0);
+                    color: darkred;
+                    border-radius: 2px;
+                    line-height: 30px;
+                }
+            </style>
+            <div class="tp-update-box">
+                Para completar este update, es necesario guardar la configuración del plugin.
+            </div>
+            <?php
+        }
+
         //Muestra el título e imprime el formulario de configuración del plugin en la página de ajustes
         public function admin_options()
         {
             echo '<h3> TodoPago </h3>';
             echo '<p> Medio de pago Todo Pago </p>';
             echo '<table class="form-table">';
+            do_action('todopago_warning');
             $this->generate_settings_html(); //Generate the HTML For the settings form.
             echo '</table><br>';
-
             $urlCredentials = plugins_url('js/credentials.js', __FILE__);
             echo '<script type="text/javascript" src="' . $urlCredentials . '"></script>';
 
@@ -566,12 +588,22 @@ function woocommerce_todopago_init()
 
         protected function buildOpcionales()
         {
+            $enabledTimeoutForm = $this->settings['expiracion_formulario_personalizado'];
+            if ($enabledTimeoutForm === 'SI') {
+                add_action('todopago_warning', array($this, 'build_todopago_save_warning'));
+                $enabledTimeoutForm = true;
+            } else if ($enabledTimeoutForm === 'NO') {
+                add_action('todopago_warning', array($this, 'build_todopago_save_warning'));
+                $enabledTimeoutForm = false;
+            }
+
+
             $opcionales = Array();
             $opcionalesBenchmark = array(
                 'deadLine' => $this->settings['deadline'],
                 'timeoutValor' => $this->settings['timeout_limite'],
                 'maxCuotas' => $this->settings['max_cuotas'],
-                'enabledTimeoutForm' => $this->settings['expiracion_formulario_personalizado'],
+                'enabledTimeoutForm' => $enabledTimeoutForm,
                 'enabledCuotas' => $this->settings['enabledCuotas']
             );
             foreach ($opcionalesBenchmark as $parametro => $valor) {
@@ -1140,7 +1172,7 @@ function woocommerce_todopago_init()
 //Actualización de versión
 
 global $todopago_db_version;
-$todopago_db_version = '1.1';
+$todopago_db_version = '1.11.1';
 
 function todopago_install()
 {
@@ -1184,7 +1216,9 @@ function todopago_update_db_check()
 
 }
 
+
 add_action('plugins_loaded', 'todopago_update_db_check');
+
 
 function my_init()
 {
@@ -1206,6 +1240,7 @@ function getCredentials()
     $core = new Core();
     $core->get_credentials();
 }
+
 
 
 function get_post_id_by_key($key)

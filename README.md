@@ -1,6 +1,6 @@
 <a name="inicio"></a>
-#Todo Pago - Módulo para WooCommerce
-### Versión 1.12.0
+# Todo Pago - Módulo para WooCommerce
+### Versión 1.11.1
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
 + [Consideraciones Generales](#consideracionesgenerales)
@@ -25,7 +25,7 @@ Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
 <a name="consideracionesgenerales"></a>
 ## Consideraciones Generales
 El plug in de pagos de <strong>Todo Pago</strong>, provee a las tiendas WooCommerce de un nuevo m&eacute;todo de pago, integrando la tienda al gateway de pago.
-La versión de este plug in esta testeada en PHP 5.3 en adelante y WordPress 3.7.5 con WooCommerce 2.3.5.
+La versión de este plug in esta testeada en PHP 5.3 en adelante y WordPress 3.7.5 con WooCommerce 2.3.5 en adelante y 3 en adelante.
 
 <a name="instalacion"></a>
 ## Instalación
@@ -66,13 +66,21 @@ Para llegar al menu de configuración del plugin ir a: <em>WooCommerce -> Ajuste
 - Estado de transacción aprobada: Se setea luego de volver del formulario de pago de Todo Pago y se obtiene una confirmación del pago.
 - Estado de transacción rechazada: Se setea luego de volver del formulario de pago de Todo Pago y se obtiene un rechazo del pago.
 
--Para versiones de Woocommerce anteriores a 3.x , la opción "Estado cuando la transacción ha sido iniciada" debe de estar seteada en "Pendiente de pago".
+- Para versiones de Woocommerce anteriores a 3.x , la opción "Estado cuando la transacción ha sido iniciada" debe de estar seteada en "Pendiente de pago".
+
+- Es necesario configurar checkout como sitio de checkout para poder llegar a los formularios.
 
 ***Configuariones timeout***
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/16-opciones_timeout.png)</br>
 
 ***Redirección final de transacción (a partir de v 1.4.2)***
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/woocommerce_1.4.2.png)</br>
+
+
+***Configuración checkout Woo***
+
+![imagen_de_configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/17-checkout.png)
+
 
 [<sub>Volver a inicio</sub>](#inicio)
 
@@ -160,9 +168,8 @@ __Estos campos no son obligatorios aunque si requeridos para Control de Fraude__
  
 <a name="constrans" ></a>
 #### Consulta de Transacciones
-Se puede consultar <strong>on line</strong> las características de la transacci&oacute;n en el sistema de Todo Pago al hacer click en el número de orden en la parte de Status de las Operaciones.<br />
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/6-%20status%20de%20las%20operaciones.png)</br>
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/7-%20detalle%20status.png)</br>
+Para ver el estado de la transacción, buscar el botón Todo Pago Tools ubicado en cada orden realizada por TodoPago que se encuentre en el apartado de órdenes de WooCommerce.
+
 
 [<sub>Volver a inicio</sub>](#inicio)
 
@@ -393,10 +400,11 @@ Es posible realizar devoluciones o reembolsos mediante el procedimiento habitual
   <thead>
   <tbody>
     <tr>
-      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.12.0</a></td>
+      <td><a href="https://github.com/TodoPago/Plugin-WooCommerce/archive/master.zip">v1.11.1</a></td>
       <td>Stable (Current version)</td>
       <td>WordPress 3.7.5 <br />
-          WooCommerce 2.3.5
+          WooCommerce 2.3.5 <br />
+          WooCommerce 3
       </td>
     </tr>
   </tbody>

@@ -388,10 +388,10 @@ class Sdk
 	public function getByRangeDateTime($arr_datos) {
 		if(!isset($arr_datos['PAGENUMBER'])) $arr_datos['PAGENUMBER'] = 1;
 		if($arr_datos["STARTDATE"] instanceof \DateTime) {
-		   $arr_datos["STARTDATE"] = url_encode($arr_datos["STARTDATE"]->format("Y-m-dTH:i:s"));
+		   $arr_datos["STARTDATE"] = urlencode($arr_datos["STARTDATE"]->format("Y-m-d\TH:i:s"));
                 }
 		if($arr_datos["ENDDATE"] instanceof \DateTime) {
-		   $arr_datos["ENDDATE"] = url_encode($arr_datos["ENDDATE"]->format("Y-m-dTH:i:s"));
+		   $arr_datos["ENDDATE"] = urlencode($arr_datos["ENDDATE"]->format("Y-m-d\TH:i:s"));
                 }
 		$url = $this->end_point.TODOPAGO_ENDPOINT_TENATN.'api/Operations/GetByRangeDateTime/MERCHANT/'. $arr_datos["MERCHANT"] . '/STARTDATE/' . $arr_datos["STARTDATE"] . '/ENDDATE/' . $arr_datos["ENDDATE"] . '/PAGENUMBER/' . $arr_datos["PAGENUMBER"];
 		return $this->doRest($url);
