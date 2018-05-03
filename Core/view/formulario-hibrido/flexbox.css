@@ -1,0 +1,64 @@
+.tp-flex {
+    display: flex;
+}
+
+.tp-flex > * {
+    flex: 1 100%
+}
+
+.tp-flex-1 {
+    flex: 1;
+}
+
+.tp-flex-2 {
+    flex: 2;
+}
+
+.tp-flex-3 {
+    flex: 3
+}
+
+.tp-flex-row {
+}
+
+.tp-flex-col {
+    flex-flow: column;
+}
+
+.tp-main-col > div {
+    margin: 5px;
+}
+
+.tp-bloque-mitad {
+    width: 48%
+}
+
+.tp-flex-grow-1 {
+    flex-grow: 1;
+    margin: 1px
+}
+
+.tp-flex-grow-3 {
+    flex: 3;
+}
+
+.tp-bloque-full {
+    width: 100%;
+}
+
+.tp-row {
+    width: 100%;
+    flex-shrink: 0
+}
+
+
+.tp-flex-space-between {
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+@media only screen and (orientation: portrait) {
+    .tp-flex-responsible {
+        flex-direction: column;
+    }
+}

@@ -31,33 +31,33 @@ try {
     $connector = new Sdk($http_header, $mode);
     $userInstance = new TodoPago\Data\User($userArray);
     $rta = $connector->getCredentials($userInstance);
-  
-    $security = explode(" ", $rta->getApikey()); 
-    $response = array( 
-            "codigoResultado" => 1,
-            "merchandid" => $rta->getMerchant(),
-            "apikey" => $rta->getApikey(),
-            "security" => $security[1]
-    );
-    
-    
-}catch(TodoPago\Exception\ResponseException $e){
+
+    $security = explode(" ", $rta->getApikey());
     $response = array(
-        "mensajeResultado" => $e->getMessage()
-    );  
-    
-}catch(TodoPago\Exception\ConnectionException $e){
+        "codigoResultado" => 1,
+        "merchandid" => $rta->getMerchant(),
+        "apikey" => $rta->getApikey(),
+        "security" => $security[1]
+    );
+
+
+} catch (TodoPago\Exception\ResponseException $e) {
     $response = array(
         "mensajeResultado" => $e->getMessage()
     );
-}catch(TodoPago\Exception\Data\EmptyFieldException $e){
+
+} catch (TodoPago\Exception\ConnectionException $e) {
+    $response = array(
+        "mensajeResultado" => $e->getMessage()
+    );
+} catch (TodoPago\Exception\Data\EmptyFieldException $e) {
     $response = array(
         "mensajeResultado" => $e->getMessage()
     );
 }
 
 echo json_encode($response);
-exit; 
+exit;
 
 ?>
 

@@ -9,6 +9,7 @@ namespace TodoPago\Utils;
  */
 class Constantes
 {
+    const TODOPAGO_CORE_VERSION = '1.3.0';
     const TODOPAGO_TODOPAGO = 'todopago';
     const TODOPAGO_TEST = 'test';
     const TODOPAGO_PROD = 'prod';
@@ -21,4 +22,5 @@ class Constantes
     const TODOPAGO_JS_PROD = 'https://forms.todopago.com.ar/resources/v2/TPBSAForm.min.js';
     const TODOPAGO_JS_TEST = 'https://developers.todopago.com.ar/resources/v2/TPBSAForm.min.js';
     const TODOPAGO_DEVOLUCION_OK = 2011;
+    const TODOPAGO_TOKEN = "token 9af02142b309ef25ed42b4ebbe571d1a2c86e0c5";
 }

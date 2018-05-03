@@ -1,0 +1,603 @@
+/*-------------------------------------*/
+/*GENERAL CONFIGURATION*/
+/*-------------------------------------*/
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 200;
+    src: local('Lato Regular'), local('Lato-Regular'), url(lato-regular.ttf) format('ttf');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+html, body, button, input, select, p {
+    font-family: Lato, Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif !important;
+}
+
+::-moz-placeholder, ::-webkit-input-placeholder, ::placeholder {
+    font-family: Lato, Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif !important;
+}
+
+:-ms-input-placeholder {
+    font-family: Lato, Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif !important;
+}
+
+input, select {
+    height: 35px;
+    max-height: 35px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+@keyframes barFill {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+.tp_wrapper {
+    outline: 0;
+    font-size: 100%;
+    color: #909090;
+}
+
+/*-------------------------------------*/
+/*GRID CONFIGURATION*/
+/*-------------------------------------*/
+
+.tp_col {
+    overflow-x: hidden;
+}
+
+/*-------------------------------------*/
+/*REUSABLE COMPONENTS*/
+/*-------------------------------------*/
+.tp_btn:link,
+.tp_btn:hover {
+    color: #fff;
+}
+
+.tp_btn {
+    width: 75%;
+    padding: 7px 40px;
+    font-weight: bold;
+    border: 0;
+    border-radius: 4px;
+    background-color: #EA3297;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    margin: 0 0 0 12%;
+}
+
+.tp_btn:hover {
+    background-color: #ee0075;
+    color: #fff;
+}
+
+.tp_btn .tp_btn_sm {
+    width: 70%;
+}
+
+.tp_btn .tp_btn_lg {
+    width: 100%;
+}
+
+section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    -webkit-box-shadow: 0 0 2px rgba(131, 121, 112, 0.4);
+    box-shadow: 0 0 2px rgba(131, 121, 112, 0.4);
+}
+
+.tp_color_text {
+    color: #EA3297;
+}
+
+.tp_color_text:hover {
+    color: red;
+}
+
+.element_invisible {
+    overflow: hidden;
+    visibility: hidden;
+    height: 1px;
+    position: absolute;
+}
+
+h1 {
+    font-size: 140%;
+}
+
+.text_small {
+    display: inline-block;
+    float: left;
+    font-size: 8px !important;
+    margin-bottom: 6px;
+}
+
+h3 {
+    font-size: 17px;
+}
+
+.tp-title-right > label {
+    float: right;
+}
+
+.confirmacion {
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.tp-title {
+    height: 10px;
+    max-height: 20px;
+}
+
+.billetera_virtual_tp,
+.billetera_tp,
+.billeterafm_tp {
+    border: 1px solid #c4c4c44d;
+}
+
+.billetera_virtual_tp {
+    font-size: 12px
+}
+
+.billeterafm_tp {
+    display: none;
+}
+
+.tp-error {
+    font-size: 11px;
+    margin-top: 3px;
+    color: #EA3297;
+    line-height: 1;
+}
+
+.tp-error-title {
+    display: flex;
+    align-content: right;
+    max-height: 30px;
+}
+
+.tp-input-row {
+    max-height: 40px;
+}
+
+.promos-lbl-container {
+    height: 100%;
+    align-content: center;
+    justify-content: center;
+}
+
+#promosLbl {
+    font-size: 25px;
+    margin: auto;
+    font-weight: normal;
+}
+
+#promosLbl br {
+    display: none;
+}
+
+#tpForm {
+    display: none;
+}
+
+#codigoSeguridadTexto {
+    float: left;
+    font-size: 7px !important;
+}
+
+#tokenPeiTxt p, #tokenPeiTxt strong {
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+#tokenPeiLbl {
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    line-height: 1.2
+}
+
+.payment-method {
+    display: none;
+}
+
+button {
+    cursor: pointer !important;
+}
+
+p {
+    margin-bottom: 0.2em !important;
+}
+
+.tp-flex {
+    display: flex;
+}
+
+.tp-center {
+    align-content: center;
+    justify-content: center;
+}
+
+#tp-tarjeta-logo {
+    display: none;
+    width: 30px;
+    transform: translateY(-120%);
+    margin-left: 230px;
+    position: absolute
+}
+
+#tp-powered {
+    display: flex;
+    height: 40px !important;
+    float: right;
+}
+
+#tp-powered img {
+    margin: 0 0 0 5px;
+    height: 30px !important;
+}
+
+.text_small {
+    text-transform: uppercase;
+}
+
+/*-------------------------------------*/
+/*LOADING*/
+/*-------------------------------------*/
+
+#loading-hibrid {
+    border-radius: 0 5px 5px 0;
+    background-color: rgb(244, 0, 122);
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(244, 180, 122, .5) 35px, rgba(244, 200, 122, .5) 70px);
+    width: 0;
+    animation-name: barFill;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    height: 100%;
+}
+
+.progress {
+    height: 40px;
+    width: 100%
+}
+
+#tp-inputs-card {
+    
+}
+
+/*-------------------------------------*/
+/*FORMS*/
+/*-------------------------------------*/
+
+/* Chanchadas para override de templates */
+
+.tp_form_control {
+    margin-bottom: 5px !important;
+    display: inline-block;
+    width: 100% !important;
+}
+
+input.tp_form_control {
+    border: 0;
+    border-bottom: 1px solid #c4c4c4;
+    color: #909090;
+}
+
+input[type=text].tp_form_control,
+input[type=email].tp_form_control,
+input[type=password].tp_form_control,
+select.tp_form_control {
+    background-color: #fff;
+    padding: 0 3%;
+    border: 0px solid #000;
+    border-bottom: 1px solid #c4c4c4;
+    color: #909090;
+}
+
+input:focus {
+    box-shadow: 0 0 4px 1px #EA3297;
+}
+
+select:disabled {
+    background-color: #eeeeee;
+}
+
+.med_width {
+    width: 50%;
+}
+
+.full_width {
+    width: 100%;
+}
+
+#formaPagoCbx {
+    display: none;
+}
+
+label {
+    color: #909090;
+}
+
+#tp-dni-numero {
+    min-width: 60%;
+}
+
+#codigoSeguridadTxt::placeholder {
+    font-size: 0.6em;
+}
+
+/*pei box*/
+#peibox {
+    margin-top: 15px;
+    display: none;
+    border: 1px solid #c4c4c4;
+    color: #555369;
+    background-color: #eee;
+    padding: 0 !important;
+}
+
+#peibox p {
+    font-size: 9px !important;
+}
+
+#peibox strong {
+    font-size: 10px !important;
+}
+
+#peiLbl strong {
+    margin: 0 0 0 15px;
+}
+
+#peiLbl p {
+    margin: 4px 0 0 15px;
+    border-top: 1px solid #000;
+}
+
+#peiCbx {
+    margin: 0 0 0 22px;
+    opacity: 0;
+}
+
+#pei-block {
+    width: 80%;
+    margin: auto;
+}
+
+#codigoSeguridadLbl {
+
+}
+
+#tp-dni-numero-title {
+    text-align: left;
+    margin-left: 2px;
+    float: left;
+}
+
+/** TOTAL **/
+
+.tp-total {
+    border: none;
+    flex-direction: column;
+    align-content: space-around;
+    border-radius: 0;
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+    background-color: #c1c1c1;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.tp-total div {
+    margin: auto;
+}
+
+/** CVV HELPER **/
+
+.clave-ico {
+    background: transparent url(../formulario-hibrido/images/clave-ico.png) no-repeat top center;
+    border: 0;
+    text-indent: -999em;
+    width: 20px;
+    height: 20px;
+    display: block;
+    margin-top: 7px;
+    margin-left: auto;
+    outline: none;
+    box-shadow: none
+}
+
+.tp-anexo {
+    z-index: 1000;
+
+}
+
+.tp-cvv-helper-container {
+    display: none;
+    width: 100%;
+    justify-content: right;
+    height: 40px;
+    flex: 0;
+}
+
+#tp-cvv-caller {
+    position: absolute;
+    transform: translateX(-100%);
+}
+
+#tp-cvv-helper {
+    display: none;
+    margin-top: 20px;
+    margin-right: 20px;
+    flex-direction: column;
+    background: white;
+    border-radius: 4px 0 4px 4px;
+    border: gray;
+    box-shadow: 1px 1px 3px 1px #3A3A3A;
+    position: absolute;
+    max-width: 300px;
+    padding: 5px;
+}
+
+#tp-cvv-helper-img {
+    float: left;
+}
+
+/*-------------------------------------*/
+/*POPOVER*/
+/*-------------------------------------*/
+
+.popover {
+    min-width: 285px;
+}
+
+/*-------------------------------------*/
+/*SECTION PAGAR CON BILLETERA*/
+/*-------------------------------------*/
+.texto_billetera_virtual,
+.confirmacion {
+    text-align: center;
+}
+
+.confirmacion > a {
+    text-decoration: none;
+    box-shadow: none !important;
+}
+
+#btn_billetera {
+    text-transform: none !important;
+}
+
+/*-------------------------------------*/
+/*FORM PAGAR*/
+/*-------------------------------------*/
+#btn_ConfirmarPago {
+    margin-bottom: 15px;
+    text-transform: none;
+}
+
+/*-------------------------------------*/
+/*SWITCH*/
+/* The switch - the box around the slider */
+/*-------------------------------------*/
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    display: none;
+}
+
+/*-------------------------------------*/
+/*THE SLIDER*/
+/* The switch - the box around the slider */
+/* Hide default HTML checkbox */
+/*-------------------------------------*/
+
+#slider-text {
+    transition: all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s;
+    width: 60%;
+    height: 100%;
+    position: absolute;
+    padding: 4px;
+    font-size: 12px;
+    left: 0;
+    color: white;
+}
+
+.switch {
+    margin: 16px 26px 0 0;
+    float: right;
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+}
+
+.switch input {
+    display: none;
+}
+
+.switch:target:before {
+    left: 32px;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #adadad;
+    -webkit-transition: .4s;
+    transition: .4s;
+    overflow: hidden;
+    outline: none;
+    display: inline-block;
+}
+
+.slider:before {
+    z-index: 1001;
+    color: white;
+    text-indent: -22px;
+    font-size: 14px;
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s;
+    white-space: nowrap;
+    word-spacing: 1px;
+    display: block
+}
+
+.slider:checked:before {
+    left: 32px;
+}
+
+input::placeholder {
+    color: lightgray !important;
+}
+
+input:checked + .slider {
+    background-color: #e6007e;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}

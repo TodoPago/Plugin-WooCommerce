@@ -1,6 +1,6 @@
 <a name="inicio"></a>
 # Todo Pago - Módulo para WooCommerce
-### Versión 1.11.1
+### Versión 1.12.0
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
 + [Consideraciones Generales](#consideracionesgenerales)
@@ -90,9 +90,9 @@ En la configuracion del plugin tambien estara la posibilidad de mostrarle al cli
 Para esto , en la configuracion se debe seleccionar la opcion Integrado en el campo de seleccion de fromulario
 ![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/10-%20formulario%20hibrido.png)</br>
 <sub></br>Del lado del cliente el formulario se verá así:</br></sub> 
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/11_formulario_hibrido2.png)
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/11_formulario_hibrido3ver2.png)
 </br>El formulario tiene dos formas de pago, ingresando los datos de una tarjeta ó utilizando la billetera de Todopago. Al ir a "Pagar con Billetera" desplegara una ventana que permitira ingresar a billetera y realizar el pago.</br>
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/15-%20billetera%20virtual.PNG)
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/15_billetera%20virtual3.png)
 
 [<sub>Volver a inicio</sub>](#inicio)
 
@@ -168,8 +168,9 @@ __Estos campos no son obligatorios aunque si requeridos para Control de Fraude__
  
 <a name="constrans" ></a>
 #### Consulta de Transacciones
-Para ver el estado de la transacción, buscar el botón Todo Pago Tools ubicado en cada orden realizada por TodoPago que se encuentre en el apartado de órdenes de WooCommerce.
-
+Se puede consultar <strong>on line</strong> las características de la transacci&oacute;n en el sistema de Todo Pago al hacer click en el número de orden en la parte de Status de las Operaciones.<br />
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/6-%20status%20de%20las%20operaciones.png)</br>
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/woocommerce/7-%20detalle%20status.png)</br>
 
 [<sub>Volver a inicio</sub>](#inicio)
 

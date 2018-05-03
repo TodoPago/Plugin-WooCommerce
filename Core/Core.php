@@ -16,6 +16,7 @@ use TodoPago\Core\Transaction\TransactionDAO;
 use TodoPago\Core\Transaction\TransactionDTO;
 use TodoPago\Core\Transaction\TransactionModel;
 use TodoPago\Utils\Constantes;
+use TodoPago\Utils\GithubApi;
 
 class Core
 {
@@ -60,12 +61,67 @@ class Core
         do_action('todopago_core_get_status', array($this, 'build_todopago_meta_box'));
         add_action('todopago_core_install', array($this, 'todopago_core_install'));
         do_action('todopago_core_get_sdk', $this->getSdk());
+        add_filter('todopago_github_update', array($this, 'todopago_github_api'), 10, 3);
+        add_action('admin_enqueue_scripts', array($this, 'todopago_admin_style'));
     }
 
     public function todopago_core_install()
     {
         $this->getTransactionDAO()->createTable();
         $this->getGoogleAddressDAO()->createTable();
+    }
+
+    public function todopago_admin_style()
+    {
+        ?>
+        <style>
+            .wp-admin select {
+                height: 38px !important;
+        </style>
+        <?php
+    }
+
+    public function todopago_github_api($url, $download, $logger)
+    {
+        $github = new GithubApi($url);
+        $githubAnswer = $github->github_get();
+        if (is_object($githubAnswer)) {
+            $githubVersion = str_replace('V', '', $githubAnswer->tag_name);
+        } else {
+            $githubVersion = $this->getConfig()->getPluginVersion();
+            $logger->error("Error al comunicarse con github: " . $githubAnswer);
+        }
+        if (version_compare($this->getConfig()->getPluginVersion(), $githubVersion) == -1) {
+            $this->build_todopago_update_box($download);
+            $logger->info("Hay versión nueva para actualizar:" . $githubVersion);
+            add_action( 'admin_notices', array($this,'tp_update_notice') );
+        }
+    }
+
+    public function tp_update_notice(){
+
+    }
+
+    protected function build_todopago_update_box($download)
+    {
+        ?>
+        <style>
+            .tp-update-box {
+                text-align: center;
+                font-size: 1.2em;
+                width: 100%;
+                height: 30px;
+                background-color: rgb(255, 231, 62);
+                border: 1px solid rgb(255, 81, 0);
+                color: darkred;
+                border-radius: 2px;
+                line-height: 30px;
+            }
+        </style>
+        <div class="tp-update-box">
+            Se encuentra disponible una versión más reciente del plugin de Todo Pago, puede consultarla desde <a href="<?php echo $download ?>" target="_blank">aquí</a>
+        </div>
+        <?php
     }
 
     public function build_todopago_meta_box($neto, $bruto, $method, $id)

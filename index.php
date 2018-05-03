@@ -2,13 +2,13 @@
 /*
     Plugin Name: TodoPago para WooCommerce
     Description: TodoPago para Woocommerce.
-    Version: 1.11.1
+    Version: 1.12.0
     Author: Todo Pago
 */
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-define('TODOPAGO_PLUGIN_VERSION', '1.11.1');
+define('TODOPAGO_PLUGIN_VERSION', '1.12.0');
 define('TP_FORM_EXTERNO', 'externo');
 define('TP_FORM_HIBRIDO', 'hibrido');
 
@@ -456,12 +456,16 @@ function woocommerce_todopago_init()
         //Muestra el título e imprime el formulario de configuración del plugin en la página de ajustes
         public function admin_options()
         {
-            echo '<h3> TodoPago </h3>';
+            global $woocommerce;
+            $tpLog = $this->_obtain_logger_outside(phpversion(), $woocommerce->version, TODOPAGO_PLUGIN_VERSION);
+            apply_filters('todopago_github_update', self::TP_PLUGIN_GITHUB_API, self::TP_PLUGIN_GITHUB_REPO, $tpLog);
+            echo '<h3> Todo Pago </h3>';
             echo '<p> Medio de pago Todo Pago </p>';
             echo '<table class="form-table">';
             do_action('todopago_warning');
             $this->generate_settings_html(); //Generate the HTML For the settings form.
             echo '</table><br>';
+
             $urlCredentials = plugins_url('js/credentials.js', __FILE__);
             echo '<script type="text/javascript" src="' . $urlCredentials . '"></script>';
 
@@ -690,8 +694,9 @@ function woocommerce_todopago_init()
                     if (empty($description)) {
                         if (method_exists($cart_item_array['data'], 'get_description'))
                             $description = $cart_item_array['data']->get_description();
-                        else
+                        else {
                             $description = $cart_item_array['data']->post->post_content;
+                        }
                         if (empty($description))
                             $description = $ProductDTO->getProductName();
                     }
@@ -703,12 +708,12 @@ function woocommerce_todopago_init()
                         $sku = $product->sku;
                     $product_sku = (!empty($sku)) ? $sku : 'default';
                     $ProductDTO->setProductSKU($product_sku);
-                    $ProductDTO->setTotalAmount($cart_item_array['line_total']);
-                    $ProductDTO->setQuantity($cart_item_array['quantity']);
+                    $ProductDTO->setTotalAmount((string)$cart_item_array['line_total']);
+                    $ProductDTO->setQuantity((string)$cart_item_array['quantity']);
                     if (method_exists($cart_item_array['data'], 'get_price'))
-                        $ProductDTO->setPrice($cart_item_array['data']->get_price());
+                        $ProductDTO->setPrice((string)$cart_item_array['data']->get_price());
                     else
-                        $ProductDTO->setPrice($cart_item_array['data']->price);
+                        $ProductDTO->setPrice((string)$cart_item_array['data']->price);
                     $products[] = $ProductDTO;
                 }
             } else {
@@ -729,7 +734,6 @@ function woocommerce_todopago_init()
                     //  }
                 }
             }
-
             return $products;
         }
 
@@ -744,6 +748,14 @@ function woocommerce_todopago_init()
             $this->tplogger->setOrder($order_id);
 
             return $this->tplogger->getLogger(true);
+        }
+
+        private function _obtain_logger_outside($php_version, $woocommerce_version, $todopago_plugin_version)
+        {
+            $this->tplogger->setPhpVersion($php_version);
+            $this->tplogger->setCommerceVersion($woocommerce_version);
+            $this->tplogger->setPluginVersion($todopago_plugin_version);
+            return $this->tplogger->getLogger(false);
         }
 
         function prepare_order($order, $logger)
