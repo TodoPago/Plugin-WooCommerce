@@ -30,6 +30,7 @@ class ConfigDTO extends AbstractDTO
     protected $ecommerceVersion;
     protected $cmsVersion;
     protected $pluginVersion;
+    protected $isBilletera;
 
 
     public function __construct($modo, $formularioTipo, $formularioTimeoutEstado, $carrito, $googleMaps, $pluginPath, $ecommerceNombre, $ecommerceVersion, $cmsVersion, $pluginVersion)
@@ -322,5 +323,19 @@ class ConfigDTO extends AbstractDTO
     {
         $this->pluginVersion = $pluginVersion;
     }
+
+	/**
+	 * @return mixed
+	 */
+	public function getisBilletera() {
+		return $this->isBilletera;
+	}
+
+	/**
+	 * @param mixed $isBilletera
+	 */
+	public function setIsBilletera( $isBilletera ) {
+		$this->isBilletera = $isBilletera;
+	}
 
 }

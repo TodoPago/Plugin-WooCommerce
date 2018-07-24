@@ -85,9 +85,8 @@ class ProductModel extends AbstractModel
 
     public function setTotalAmount($totalAmount)
     {
-        $totalAmount = $this->getCustomValidator()->validateEmpty($totalAmount, 'Amount');
         $totalAmount = $this->getCustomValidator()->validateString($totalAmount, 'Amount');
-        $this->totalAmount = $totalAmount;
+        $this->totalAmount = $totalAmount == '0' ? '0.00' : $totalAmount;
     }
 
     public function getQuantity()
@@ -109,9 +108,8 @@ class ProductModel extends AbstractModel
 
     public function setPrice($price)
     {
-        $price = $this->getCustomValidator()->validateEmpty($price, 'Price');
         $price = $this->getCustomValidator()->validateString($price, 'Price');
-        $this->price = $price;
+        $this->price = $price == '0' ? '0.00' : $price;
     }
 
 }

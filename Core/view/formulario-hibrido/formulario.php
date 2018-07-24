@@ -4,7 +4,6 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 //var_dump("Url del formulario: ".$url_form);
 
 ?>
-
 <link href="<?php echo "$form_dir/flexbox.css"; ?>" rel="stylesheet" type="text/css">
 <link href="<?php echo "$form_dir/form_todopago.css"; ?>" rel="stylesheet" type="text/css">
 <link href="<?php echo "$form_dir/queries.css"; ?>" rel="stylesheet" type="text/css">
@@ -48,7 +47,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
         </div>
     </section>
 
-    <section class="billetera_tp">
+    <section class="billetera_tp" id="tp-tarjetas">
         <div class="tp-row">
             <p>
                 Con tu tarjeta de crédito o débito
@@ -299,6 +298,8 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
     var tarjetaLogo = document.getElementById('tp-tarjeta-logo');
     var poweredLogo = document.getElementById('tp-powered-img');
     var numeroTarjetaTxt = document.getElementById('numeroTarjetaTxt')
+    var btnBilletera = document.getElementById('btn_billetera');
+    var todoPagoSection = document.getElementById('tp-tarjetas');
     var poweredLogoUrl = "<?php echo $form_dir;?>/images/";
     var emptyImg = "<?php echo $form_dir;?>/images/empty.png";
     var peiCbx = tpformJquery("#peiCbx");
@@ -306,6 +307,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
     var sliderText = tpformJquery("#slider-text");
     var helperCaller = tpformJquery("#tp-cvv-caller");
     var helperPopover = tpformJquery("#tp-cvv-helper");
+    var tipoDePago = "<?php echo $paymentMethod; ?>"
 
 
     var idTarjetas = {
@@ -402,9 +404,16 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
         setTimeout(function () {
             tpformJquery(".progress").hide('fast');
+            if (tipoDePago === "<?php echo \TodoPago\Utils\Constantes::TODOPAGO_BILLETERA; ?>") {
+                btnBilletera.click();
+                todoPagoSection.style.opacity = '0';
+                todoPagoSection.style.height = '0px';
+                todoPagoSection.style.display = 'none';
+            }
         }, 2000);
 
         setTimeout(function () {
+            btnBilletera.innerText = "Iniciar Sesión";
             tpformJquery("#tpForm").fadeTo('fast', 1);
         }, 2200);
     }
@@ -444,7 +453,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
     function customPaymentErrorResponse(response) {
         console.log(response.ResultCode + " -> " + response.ResultMessage);
         if (response.AuthorizationKey) {
-            window.location.href = urlError + "&Answer=" + response.AuthorizationKey + "&Error=" + response.ResultMessage;
+            window.location.href = urlError + "&Answer=" + response.AuthorizationKey;
         } else {
             window.location.href = urlError + "&Error=" + response.ResultMessage;
         }
@@ -539,7 +548,6 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             beforeRequest: 'initLoading',
             afterRequest: 'stopLoading'
         });
-
         /************* SETEO UN ITEM PARA COMPRAR ************************/
         window.TPFORMAPI.hybridForm.setItem({
             publicKey: security,

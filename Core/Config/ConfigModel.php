@@ -38,6 +38,7 @@ class ConfigModel extends \TodoPago\Core\AbstractClass\AbstractModel
     protected $ecommerceVersion;
     protected $cmsVersion;
     protected $pluginVersion;
+    protected $paymentMethod;
 
     public function __construct(ConfigDTO $todoPagoConfigDTO)
     {
@@ -60,6 +61,8 @@ class ConfigModel extends \TodoPago\Core\AbstractClass\AbstractModel
             $this->setUrlCancelOrder($todoPagoConfigDTO->getUrlCancelOrder());
         if (is_array($todoPagoConfigDTO->getArrayOpcionales()))
             $this->setArrayOpcionales($todoPagoConfigDTO->getArrayOpcionales());
+        if($todoPagoConfigDTO->getisBilletera())
+        	$this->setPaymentMethod($todoPagoConfigDTO->getisBilletera());
     }
 
     /**
@@ -88,6 +91,7 @@ class ConfigModel extends \TodoPago\Core\AbstractClass\AbstractModel
 
     /**
      * @param mixed $modo
+     * @throws
      */
     public function setModo($modo)
     {
@@ -131,6 +135,7 @@ class ConfigModel extends \TodoPago\Core\AbstractClass\AbstractModel
 
     /**
      * @param mixed $formularioTipo
+     * @throws
      */
     public function setFormularioTipo($formularioTipo)
     {
@@ -442,4 +447,20 @@ class ConfigModel extends \TodoPago\Core\AbstractClass\AbstractModel
     {
         $this->pluginVersion = $this->getCustomValidator()->validateString((string)$pluginVersion, 'Versión Plugin');
     }
+
+	/**
+	 * @return mixed
+	 */
+	public function getPaymentMethod() {
+		return $this->paymentMethod;
+	}
+
+	/**
+	 * @param mixed $paymentMethod
+	 */
+	public function setPaymentMethod( $paymentMethod ) {
+		$this->paymentMethod = $this->getCustomValidator()->validateString($paymentMethod, "Tipo de pago");
+	}
+
+
 }

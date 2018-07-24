@@ -1,0 +1,33 @@
+.billetera-banner {
+    min-height: 160px;
+    color: blue;
+    width: 400px;
+    overflow: hidden;
+}
+
+.billetera-banner > option {
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 380px;
+    filter: grayscale(100%);
+}
+
+.billetera-banner > option:checked {
+    filter: grayscale(0);
+}
+
+.billetera-banner > option:nth-of-type(1) {
+    color: #EA3297;
+    background-image: url(https://todopago.com.ar/sites/todopago.com.ar/files/billetera/pluginstarjeta1.jpg)
+}
+
+.billetera-banner > option:nth-of-type(2) {
+    color: #EA3297;
+    background-image: url(https://todopago.com.ar/sites/todopago.com.ar/files/billetera/pluginstarjeta2.jpg)
+}
+
+.billetera-banner > option:nth-of-type(3) {
+    color: #EA3297;
+    background-image: url(https://todopago.com.ar/sites/todopago.com.ar/files/billetera/pluginstarjeta3.jpg)
+}

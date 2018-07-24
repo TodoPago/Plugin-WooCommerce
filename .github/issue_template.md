@@ -9,7 +9,8 @@ Esta guía tiene como objetivo contextualizar el inconveniente desde un primer m
 * [ ] ¿Habilitaste la extensión SOAP de PHP?
 * [ ] ¿Habilitaste la extensión CURL de PHP?
 * [ ] ¿Habilitaste la extensión openSSL de PHP?
-* [ ] ¿Seguiste los pasos de instalación descritos en [README.md](https://github.com/TodoPago/dev-sdk-php/blob/master/README.md)?
+* [ ] ¿Seguiste los pasos de instalación descritos en [README.md](https://github.com/TodoPago/Plugin-WooCommerce/blob/master/README.md)?
+* [ ] ¿Es tu instalación de Woocommerce superior a la 2.3.5 y la de Wordpress superior a la 3.7.5?
 * [x] Completar con una X dentro de los corchetes para los requisitos cumplidos.
 
 ## Comportamiento esperado
